@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -31,6 +32,10 @@ import com.baselet.standalone.gui.StandaloneGUI;
 public class MainStandalone {
 
 	private static final Logger log = LoggerFactory.getLogger(MainStandalone.class);
+
+	private MainStandalone() {
+		throw new IllegalAccessError("Main Class");
+	}
 
 	public static void main(final String[] args) {
 		// #369 Before anything else make sure that OSX handles cmd+Q as expected (see #369 and https://stackoverflow.com/questions/2061194/swing-on-osx-how-to-trap-command-q/2061318#2061318)
@@ -66,7 +71,7 @@ public class MainStandalone {
 				}
 			}
 			else if (action != null && format != null && filename != null) {
-				if (action.equals("convert")) {
+				if ("convert".equals(action)) {
 					initAll(RuntimeType.BATCH);
 					String[] splitFilename = filename.split("(/|\\\\)");
 					String localName = splitFilename[splitFilename.length - 1];
@@ -130,12 +135,12 @@ public class MainStandalone {
 			handler.getFileHandler().doExportAs(outputFormat, new File(outputFileName));
 			printToConsole("Conversion finished: \"" + inputFile.getAbsolutePath() + "\" to \"" + outputFileName + "\"");
 		} catch (Exception e) {
-			printToConsole(e.getMessage());
+			log.info(e.getMessage());
 		}
 	}
 
 	private static void printToConsole(String text) {
-		System.out.println(text);
+		log.info(text);
 	}
 
 	private static String determineOutputName(File inputFile, String outputFormat, String outputParam) {
@@ -154,19 +159,21 @@ public class MainStandalone {
 
 	private static String createBatchOutputName(String extension, String fileName) {
 		String uxf = "." + Program.getInstance().getExtension();
-		if (fileName.endsWith(uxf)) { // #451: remove uxf suffix before adding the new extension
-			fileName = fileName.substring(0, fileName.length() - uxf.length());
+		String batchOutputName = fileName;
+		if (batchOutputName.endsWith(uxf)) { // #451: remove uxf suffix before adding the new extension
+			batchOutputName = batchOutputName.substring(0, batchOutputName.length() - uxf.length());
 		}
-		if (fileName.endsWith(extension)) {
-			return fileName;
+		if (batchOutputName.endsWith(extension)) {
+			return batchOutputName;
 		}
 		else {
-			return fileName + "." + extension;
+			return batchOutputName + "." + extension;
 		}
 	}
 
 	private static void initHomeProgramPath() {
-		String tempPath, realPath;
+		String tempPath;
+		String realPath;
 		tempPath = Path.executable();
 		tempPath = tempPath.substring(0, tempPath.length() - 1);
 		tempPath = tempPath.substring(0, tempPath.lastIndexOf('/') + 1);
@@ -181,13 +188,24 @@ public class MainStandalone {
 		// send the filename per file to the running application
 		File f1 = tmpFile();
 		try {
-			PrintWriter writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(f1), "UTF-8"));
+			FileOutputStream out = new FileOutputStream(f1);
+			OutputStreamWriter outputWriter = new OutputStreamWriter(out, "UTF-8");
+			PrintWriter writer = new PrintWriter(outputWriter);
+
 			writer.println(filename);
+
 			writer.close();
+			outputWriter.close();
+			out.close();
 			return true;
 		} catch (UnsupportedEncodingException e) {
+			log.info(e.getMessage());
 			return false;
 		} catch (FileNotFoundException e) {
+			log.info(e.getMessage());
+			return false;
+		} catch (IOException e) {
+			log.info(e.getMessage());
 			return false;
 		}
 	}
@@ -200,8 +218,8 @@ public class MainStandalone {
 			}
 			Path.safeCreateFile(f, false);
 			new Timer("alreadyRunningChecker", true).schedule(new RunningFileChecker(tmpFile(), Main.getInstance()), 0, 1000);
-		} catch (Exception ex) {
-			ex.printStackTrace();
+		} catch (Exception e) {
+			log.info(e.getMessage());
 			return true;
 		}
 		return false;

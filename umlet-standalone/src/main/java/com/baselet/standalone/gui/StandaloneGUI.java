@@ -33,6 +33,8 @@ public class StandaloneGUI extends BaseGUI {
 
 	private final Logger log = LoggerFactory.getLogger(StandaloneGUI.class);
 
+	private final String CANNOT_SET_LOOK_FEEL = "Cannot set LookAndFeel";
+
 	private JFrame mainFrame;
 
 	private final MenuBuilder menuBuilder = new MenuBuilder();
@@ -58,12 +60,12 @@ public class StandaloneGUI extends BaseGUI {
 
 	@Override
 	public void setDiagramChanged(DiagramHandler diagram, boolean changed) {
-		String change_string = "";
+		String changeString = "";
 		if (changed) {
-			change_string = " *";
+			changeString = " *";
 		}
 
-		updateDiagramName(diagram, diagram.getName() + change_string);
+		updateDiagramName(diagram, diagram.getName() + changeString);
 	}
 
 	@Override
@@ -287,14 +289,8 @@ public class StandaloneGUI extends BaseGUI {
 			SwingUtilities.updateComponentTreeUI(optionframe);
 			topFrame.pack();
 			optionframe.pack();
-		} catch (ClassNotFoundException e) {
-			log.error("Cannot set LookAndFeel", e);
-		} catch (InstantiationException e) {
-			log.error("Cannot set LookAndFeel", e);
-		} catch (IllegalAccessException e) {
-			log.error("Cannot set LookAndFeel", e);
-		} catch (UnsupportedLookAndFeelException e) {
-			log.error("Cannot set LookAndFeel", e);
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+			log.error(CANNOT_SET_LOOK_FEEL, e);
 		}
 	}
 

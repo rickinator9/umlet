@@ -47,7 +47,7 @@ public class CombinedFragment implements LifelineSpanningTickSpanningOccurrence,
 		this.coveredLifelines = Arrays.copyOf(coveredLifelines, coveredLifelines.length);
 		this.startTick = startTick;
 		operatorLines = operator.split("\n");
-		operands = new LinkedList<CombinedFragment.Operand>();
+		operands = new LinkedList<>();
 	}
 
 	@Override
@@ -64,10 +64,6 @@ public class CombinedFragment implements LifelineSpanningTickSpanningOccurrence,
 	public int getStartTick() {
 		return startTick;
 	}
-
-	// public void setEndTick(int endTick) {
-	// this.endTick = endTick;
-	// }
 
 	/**
 	 * the last tick which lies in the combined fragment
@@ -86,7 +82,7 @@ public class CombinedFragment implements LifelineSpanningTickSpanningOccurrence,
 	 * @param endTick
 	 */
 	public void addOperand(int startTick, int endTick) {
-		if (operands.size() == 0 && this.startTick != startTick) {
+		if (operands.isEmpty() && this.startTick != startTick) {
 			throw new IllegalArgumentException("The start tick of the first operand must be equal to the start tick of the combined fragment");
 		}
 		operands.add(new Operand(startTick, endTick));
@@ -102,7 +98,7 @@ public class CombinedFragment implements LifelineSpanningTickSpanningOccurrence,
 	 * if the lifeline is not created on start and the startTick is prior in time to the create tick
 	 */
 	public void addOperand(int startTick, int endTick, String text, Lifeline constraintLifeline) throws SequenceDiagramCheckedException {
-		if (operands.size() == 0 && this.startTick != startTick) {
+		if (operands.isEmpty() && this.startTick != startTick) {
 			throw new IllegalArgumentException("The start tick of the first operand must be equal to the start tick of the combined fragment");
 		}
 		operands.add(new Operand(startTick, endTick, text, constraintLifeline));
@@ -125,7 +121,7 @@ public class CombinedFragment implements LifelineSpanningTickSpanningOccurrence,
 		};
 		rectangle[4] = rectangle[0];
 		drawHandler.drawLines(rectangle);
-		Collection<Line1D> slopeNotPermittedAreas = new ArrayList<Line1D>(coveredLifelines.length);
+		Collection<Line1D> slopeNotPermittedAreas = new ArrayList<>(coveredLifelines.length);
 		for (Lifeline ll : coveredLifelines) {
 			if (ll.getLifelineLeftPartWidth(startTick) > 0) {
 				double llCenter = drawingInfo.getHDrawingInfo(ll).getHorizontalCenter();
@@ -148,7 +144,7 @@ public class CombinedFragment implements LifelineSpanningTickSpanningOccurrence,
 			}
 		}
 		// draw operand and add the interrupted area
-		if (operands.size() > 0 && operands.getFirst().constraint != null) {
+		if (!operands.isEmpty() && operands.getFirst().constraint != null) {
 			Operand firstOperand = operands.getFirst();
 			Operand.InteractionConstraint firstIntConst = firstOperand.constraint;
 			double constraintTopY = drawingInfo.getVerticalStart(this) + headerSize.y + HEADER_CONSTRAINT_PADDING;
@@ -191,7 +187,7 @@ public class CombinedFragment implements LifelineSpanningTickSpanningOccurrence,
 		// lifeline as buffere because in rare cases the slope could "jump" over it (to avoid that the slope is in the ExecSpec)
 		// add the border padding so nested combined fragments look nice
 		double minWidth = PentagonDrawingHelper.getMinimumWidth(drawHandler, operatorLines);
-		if (operands.size() > 0 && operands.getFirst().constraint != null) {
+		if (!operands.isEmpty() && operands.getFirst().constraint != null) {
 			double constraintMinWidth = operands.getFirst().constraint.getMinWidth(drawHandler) * coveredLifelines.length + (coveredLifelines.length - 1) * lifelineHorizontalPadding;
 			minWidth = Math.max(minWidth, constraintMinWidth);
 		}
@@ -207,7 +203,7 @@ public class CombinedFragment implements LifelineSpanningTickSpanningOccurrence,
 		// handled as LifelineOccurrence
 		double headerHeight = PentagonDrawingHelper.getHeight(drawHandler, operatorLines, hInfo.getWidth(this));
 		headerHeight -= COMBINED_FRAGMENT_VERTICAL_BORDER_PADDING; // head draws into the padding
-		if (operands.size() > 0 && operands.getFirst().constraint != null) {
+		if (!operands.isEmpty() && operands.getFirst().constraint != null) {
 			headerHeight += HEADER_CONSTRAINT_PADDING;
 			headerHeight += TextSplitter.getSplitStringHeight(operands.getFirst().constraint.textLines,
 					hInfo.getHDrawingInfo(operands.getFirst().constraint.affectedLifeline).getSymmetricWidth(startTick),

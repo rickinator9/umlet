@@ -54,8 +54,8 @@ public class DiagramFileHandler {
 	private final DiagramHandler handler;
 	private File file;
 	private File lastExportFile;
-	private final HashMap<String, FileFilter> filters = new HashMap<String, FileFilter>();
-	private final HashMap<FileFilter, String> fileextensions = new HashMap<FileFilter, String>();
+	private final HashMap<String, FileFilter> filters = new HashMap<>();
+	private final HashMap<FileFilter, String> fileextensions = new HashMap<>();
 
 	private final OwnFileFilter filterxml = new OwnFileFilter(Program.getInstance().getExtension(), Program.getInstance().getProgramName() + " diagram format");
 	private final OwnFileFilter filterbmp = new OwnFileFilter("bmp", "BMP");
@@ -68,7 +68,7 @@ public class DiagramFileHandler {
 
 	private final OwnFileFilter[] saveFileFilter = new OwnFileFilter[] { filterxml };
 	private final OwnFileFilter[] exportFileFilter = new OwnFileFilter[] { filterbmp, filtereps, filtergif, filterjpg, filterpdf, filterpng, filtersvg };
-	private final List<OwnFileFilter> allFileFilters = new ArrayList<OwnFileFilter>();
+	private final List<OwnFileFilter> allFileFilters = new ArrayList<>();
 
 	protected DiagramFileHandler(DiagramHandler diagramHandler, File file) {
 		handler = diagramHandler;
@@ -260,16 +260,16 @@ public class DiagramFileHandler {
 	public void doSaveAs(String fileextension) throws IOException {
 		boolean ownXmlFormat = fileextension.equals(Program.getInstance().getExtension());
 		JFileChooser fileChooser = createSaveFileChooser(!ownXmlFormat);
-		String fileName = chooseFileName(ownXmlFormat, filters.get(fileextension), fileChooser);
+		String chosenFileName = chooseFileName(ownXmlFormat, filters.get(fileextension), fileChooser);
 		String extension = fileextensions.get(fileChooser.getFileFilter());
-		if (fileName == null) {
+		if (chosenFileName == null) {
 			return; // If the filechooser has been closed without saving
 		}
-		if (!fileName.endsWith("." + extension)) {
-			fileName += "." + extension;
+		if (!chosenFileName.endsWith("." + extension)) {
+			chosenFileName += "." + extension;
 		}
 
-		File fileToSave = new File(fileName);
+		File fileToSave = new File(chosenFileName);
 		Config.getInstance().setSaveFileHome(fileToSave.getParent());
 		if (extension.equals(Program.getInstance().getExtension())) {
 			file = fileToSave;
@@ -306,13 +306,11 @@ public class DiagramFileHandler {
 	}
 
 	public void doExportAs(String extension, File file) throws IOException {
-		// CustomElementSecurityManager.addThreadPrivileges(Thread.currentThread(), fileName);
 		try {
 			OutputHandler.createAndOutputToFile(extension, file, handler);
 		} catch (Exception e) {
 			throw new IOException(e.getMessage());
 		}
-		// CustomElementSecurityManager.remThreadPrivileges(Thread.currentThread());
 	}
 
 	private void save() throws UnsupportedEncodingException, FileNotFoundException {
@@ -332,8 +330,6 @@ public class DiagramFileHandler {
 	}
 
 	private String chooseFileName(boolean ownXmlFormat, FileFilter filefilter, JFileChooser fileChooser) {
-		String fileName = null;
-
 		setAvailableFileFilters(ownXmlFormat, fileChooser);
 		fileChooser.setFileFilter(filefilter);
 
@@ -346,9 +342,9 @@ public class DiagramFileHandler {
 					return chooseFileName(ownXmlFormat, filefilter, fileChooser);
 				}
 			}
-			fileName = selectedFileWithExt.getAbsolutePath();
+			return selectedFileWithExt.getAbsolutePath();
 		}
-		return fileName;
+		return "";
 	}
 
 	/**
@@ -361,8 +357,7 @@ public class DiagramFileHandler {
 		if (!filename.endsWith(extension)) {
 			filename += extension;
 		}
-		File selectedFileWithExt = new File(filename);
-		return selectedFileWithExt;
+		return new File(filename);
 	}
 
 	/**

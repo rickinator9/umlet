@@ -15,7 +15,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
@@ -89,7 +88,7 @@ public class StartUpHelpText extends JEditorPane implements ContainerListener, C
 		return StartUpHelpText.class.getClassLoader().getResourceAsStream("startuphelp.html");
 	}
 
-	private void showHTML(String filename) throws MalformedURLException, IOException {
+	private void showHTML(String filename) throws IOException {
 		this.setPage(new URL("file:///" + filename));
 		addHyperlinkListener(new HyperLinkActiveListener());
 		setEditable(false);

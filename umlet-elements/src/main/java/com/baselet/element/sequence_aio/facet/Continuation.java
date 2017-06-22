@@ -68,7 +68,7 @@ public class Continuation implements LifelineSpanningTickSpanningOccurrence {
 			HorizontalDrawingInfo hInfo, double defaultTickHeight
 	// Line1D[] lifelinesHorizontalSpanning, double tickHeight
 	) {
-		Map<Integer, Double> ret = new HashMap<Integer, Double>();
+		Map<Integer, Double> ret = new HashMap<>();
 		double neededHeight = TextSplitter.getSplitStringHeight(textLines,
 				hInfo.getSymmetricWidth(getFirstLifeline(), getLastLifeline(), tick) - ROUND_PART_WIDTH * 2,
 				drawHandler) + VERTICAL_BORDER_PADDING * 2;
