@@ -253,6 +253,7 @@ public class MailPanel extends JPanel {
 				diagramPdf = fileHandler.doSaveTempDiagram(diagramName, "pdf");
 			}
 		} catch (Exception e) {
+			log.info("", e);
 			JOptionPane.showMessageDialog(this, "There has been an error with your diagram. Please make sure it's not empty.", "Diagram Error", JOptionPane.ERROR_MESSAGE, UIManager.getIcon("OptionPane.errorIcon"));
 			return;
 		}

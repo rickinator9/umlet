@@ -7,16 +7,16 @@ import java.util.List;
 import com.baselet.control.Matrix;
 
 public class DataSet {
-	private String id;
-	private Integer nr;
-	private int lineNr;
+	private final String id;
+	private final Integer nr;
+	private final int lineNr;
 	private boolean isInverted;
 
 	private List<String> titleRow = null;
 	private List<String> titleCol = null;
 
 	private Matrix<Double> valueMatrix;
-	private Matrix<String> analyseMatrix;
+	private final Matrix<String> analyseMatrix;
 
 	public static final Double VALUE_DEFAULT = 0.0; // used for invalid value fields or missing fields
 
@@ -171,10 +171,7 @@ public class DataSet {
 			if (cell == null) {
 				continue;
 			}
-			try {
-				Double.parseDouble(cell);
-				numbersInRow++;
-			} catch (NumberFormatException ex) {/* do nothing */}
+			numbersInRow++;
 		}
 
 		return row.size() - numbersInRow > numbersInRow;

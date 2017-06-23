@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.baselet.control.basics.geom.Point;
 import com.baselet.control.constants.Constants;
 import com.baselet.control.constants.FacetConstants;
@@ -17,6 +20,8 @@ import com.baselet.control.enums.LineType;
 import com.baselet.diagram.draw.DoubleStroke;
 
 public abstract class Utils {
+
+	private static Logger log = LoggerFactory.getLogger(Utils.class);
 
 	private Utils() {} // private constructor to avoid instantiation
 
@@ -205,7 +210,9 @@ public abstract class Utils {
 			} finally {
 				try {
 					stream.close();
-				} catch (IOException e) {/* nothing to do */}
+				} catch (IOException e) {
+					log.info("", e);
+				}
 			}
 		}
 	}

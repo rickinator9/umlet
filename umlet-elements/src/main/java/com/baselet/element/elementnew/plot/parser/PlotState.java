@@ -5,7 +5,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class PlotState {
+
+	private static Logger log = LoggerFactory.getLogger(PlotState.class);
 
 	private final List<PlotState> subPlots;
 
@@ -148,6 +153,7 @@ public class PlotState {
 			Double.parseDouble(value);
 			return true;
 		} catch (Exception e) {
+			log.info("", e);
 			return false;
 		}
 	}

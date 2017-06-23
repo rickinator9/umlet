@@ -155,7 +155,9 @@ public class Path {
 		URL codeSourceUrl = c.getProtectionDomain().getCodeSource().getLocation();
 		try { // Convert URL to URI to avoid HTML problems with special characters like space,ä,ö,ü,...
 			path = codeSourceUrl.toURI().getPath();
-		} catch (URISyntaxException e) {/* path stays null */}
+		} catch (URISyntaxException e) {
+			log.info("", e);
+		}
 
 		if (path == null) { // URI2URL Conversion failed, because URI.getPath() returned null OR because of an URISyntaxException
 			// In this case use the URL and replace special characters manually (for now only space)

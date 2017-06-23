@@ -103,8 +103,8 @@ public class Stickables {
 		StickLine oldLine = stickline.getOld();
 		StickLine newLine = stickline.getNew();
 
-		int diffX = 0;
-		int diffY = 0;
+		int diffX;
+		int diffY;
 
 		if (newLine.getDirectionOfLine(true).isHorizontal()) {
 			diffY = newLine.getStart().getY().intValue() - oldLine.getStart().getY().intValue();

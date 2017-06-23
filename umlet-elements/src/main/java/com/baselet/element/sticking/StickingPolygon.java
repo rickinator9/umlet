@@ -19,8 +19,8 @@ public class StickingPolygon {
 
 		// calculates the difference between this line and the other line at the specified x or y coordinate (whichever fits better)
 		public PointDouble diffToLine(StickLine s, int inX, int inY) {
-			double x = 0;
-			double y = 0;
+			double x;
+			double y;
 			if (getEnd().x.equals(getStart().x)) {
 				// AB: Fixed: use s.getStart().x instead of getStart().x
 				x = s.getStart().x - (s.getEnd().x - s.getStart().x) - inX; // mitte der neuen linie

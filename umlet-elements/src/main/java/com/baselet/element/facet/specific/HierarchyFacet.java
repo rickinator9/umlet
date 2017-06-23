@@ -33,13 +33,13 @@ public class HierarchyFacet extends Facet {
 	}
 
 	private static final class Cache {
-		HierarchyType type = HierarchyType.Actor;
+		HierarchyType type = HierarchyType.ACTOR;
 		private int lineNr;
-		private final List<ReferencePoint> points = new ArrayList<ReferencePoint>();
+		private final List<ReferencePoint> points = new ArrayList<>();
 	}
 
-	public static enum HierarchyType {
-		Actor, Package, WorkProcess;
+	public enum HierarchyType {
+		ACTOR, PACKAGE, WORK_PROCESS;
 	}
 
 	public static final HierarchyFacet INSTANCE = new HierarchyFacet();
@@ -71,9 +71,9 @@ public class HierarchyFacet extends Facet {
 		int tabCount = line.length() - lineWithoutTabs.length();
 		int border = 10;
 		PointDouble upperLeftPoint = null;
-		PointDouble lowerRightPoint = null;
-		PointDouble textPos = null;
-		if (cache.type == HierarchyType.Actor) {
+		PointDouble lowerRightPoint;
+		PointDouble textPos;
+		if (cache.type == HierarchyType.ACTOR) {
 			int actorDimension = 10;
 			int actorHCenter = border + actorDimension + actorDimension * 5 * tabCount;
 			int actorVTop = border + cache.lineNr * actorDimension * 6;
@@ -86,7 +86,7 @@ public class HierarchyFacet extends Facet {
 			drawer.print(lineWithoutTabs, textPos, AlignHorizontal.LEFT);
 			updateElementSize(state, lineWithoutTabs, lowerRightPoint, textPos, drawer.textWidth(lineWithoutTabs), DrawHelper.headToLegLength(actorDimension));
 		}
-		else if (cache.type == HierarchyType.Package) {
+		else if (cache.type == HierarchyType.PACKAGE) {
 			int fullHeight = 20;
 			int fullWidth = 30;
 			double xPos = border + tabCount * fullWidth * 1.4;
@@ -100,7 +100,7 @@ public class HierarchyFacet extends Facet {
 			drawer.print(lineWithoutTabs, textPos, AlignHorizontal.LEFT);
 			updateElementSize(state, lineWithoutTabs, lowerRightPoint, textPos, drawer.textWidth(lineWithoutTabs), fullHeight + SharedConstants.DEFAULT_GRID_SIZE);
 		}
-		else if (cache.type == HierarchyType.WorkProcess) {
+		else if (cache.type == HierarchyType.WORK_PROCESS) {
 			double fullHeight = 40;
 			double fullWidth = 140;
 			double xPos = border + tabCount * fullWidth;
@@ -166,9 +166,9 @@ public class HierarchyFacet extends Facet {
 
 	@Override
 	public List<AutocompletionText> getAutocompletionStrings() {
-		return Arrays.asList(new AutocompletionText(KEY + KeyValueFacet.SEP + HierarchyType.Actor, "draws hierarchy of actors"),
-				new AutocompletionText(KEY + KeyValueFacet.SEP + HierarchyType.Package, "draws hierarchy of packages"),
-				new AutocompletionText(KEY + KeyValueFacet.SEP + HierarchyType.WorkProcess, "draws hierarchy of work processes"));
+		return Arrays.asList(new AutocompletionText(KEY + KeyValueFacet.SEP + HierarchyType.ACTOR, "draws hierarchy of actors"),
+				new AutocompletionText(KEY + KeyValueFacet.SEP + HierarchyType.PACKAGE, "draws hierarchy of packages"),
+				new AutocompletionText(KEY + KeyValueFacet.SEP + HierarchyType.WORK_PROCESS, "draws hierarchy of work processes"));
 	}
 
 }

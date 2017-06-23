@@ -322,7 +322,7 @@ public class Lifeline {
 	private void drawLifeline(DrawHandler drawHandler, LifelineDrawingInfo drawingInfo, int lifelineLastTick) {
 		int currentStartTick = 0;
 		int endTick;
-		int currentActiveCount = 0;
+		int currentActiveCount;
 		boolean startInc = false;
 		boolean endInc;
 		// used as stack with newest elements at start

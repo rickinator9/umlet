@@ -408,7 +408,7 @@ public class PlotDrawHandler {
 
 				barLength = (int) calculateValuePos(v, valueSegment);
 
-				int barWidth = 0;
+				int barWidth;
 				int ownvar = vIndex * (int) Math.round((double) descSegment / valueRowAmount);
 				// calculate last bar width, fixing rounding errors
 				if (vIndex == valueRowAmount - 1) {
@@ -463,7 +463,7 @@ public class PlotDrawHandler {
 	private final void drawPieArcs(Double[] values, String[] desc, Point ulCorner, int diameter, Double valueSum, List<String> colors) {
 		int cIndex = 0;
 
-		Double arcAngle = 0D;
+		Double arcAngle;
 		Double startAngle = 0D;
 
 		for (int i = 0; i < values.length; i++) {
