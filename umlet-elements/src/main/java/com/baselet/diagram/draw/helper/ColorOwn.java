@@ -5,11 +5,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class ColorOwn {
 
+	private final static Logger log = LoggerFactory.getLogger(ColorOwn.class);
 	public static final String EXAMPLE_TEXT = "color string (green,...) or code (#3c7a00,...)";
 
-	public static enum Transparency {
+	public enum Transparency {
 		FOREGROUND(255), FULL_TRANSPARENT(0), DEPRECATED_WARNING(175), BACKGROUND(125), SELECTION_BACKGROUND(20);
 
 		private int alpha;
@@ -48,7 +52,7 @@ public class ColorOwn {
 	public static final Map<String, ColorOwn> COLOR_MAP;
 
 	static {
-		HashMap<String, ColorOwn> colorMap = new HashMap<String, ColorOwn>();
+		HashMap<String, ColorOwn> colorMap = new HashMap<>();
 		colorMap.put("black", ColorOwn.BLACK);
 		colorMap.put("blue", ColorOwn.BLUE);
 		colorMap.put("cyan", ColorOwn.CYAN);
@@ -67,44 +71,44 @@ public class ColorOwn {
 	}
 
 	/* fields should be final to avoid changing parts of existing color object (otherwise unexpected visible changes can happen) */
-	private final int red;
-	private final int green;
-	private final int blue;
-	private final int alpha;
+	private final int r;
+	private final int g;
+	private final int b;
+	private final int a;
 
 	public ColorOwn(int red, int green, int blue, Transparency transparency) {
 		this(red, green, blue, transparency.getAlpha());
 	}
 
 	public ColorOwn(int red, int green, int blue, int alpha) {
-		this.red = red;
-		this.green = green;
-		this.blue = blue;
-		this.alpha = alpha;
+		r = red;
+		g = green;
+		b = blue;
+		a = alpha;
 	}
 
 	public ColorOwn(String hex) {
 		int i = Integer.decode(hex);
-		red = i >> 16 & 0xFF;
-		green = i >> 8 & 0xFF;
-		blue = i & 0xFF;
-		alpha = Transparency.FOREGROUND.getAlpha();
+		r = i >> 16 & 0xFF;
+		g = i >> 8 & 0xFF;
+		b = i & 0xFF;
+		a = Transparency.FOREGROUND.getAlpha();
 	}
 
 	public int getRed() {
-		return red;
+		return r;
 	}
 
 	public int getGreen() {
-		return green;
+		return g;
 	}
 
 	public int getBlue() {
-		return blue;
+		return b;
 	}
 
 	public int getAlpha() {
-		return alpha;
+		return a;
 	}
 
 	public ColorOwn transparency(Transparency transparency) {
@@ -130,6 +134,7 @@ public class ColorOwn {
 		try {
 			return forString(colorString, transparency);
 		} catch (StyleException e) {
+			log.info("", e);
 			return null;
 		}
 	}
@@ -179,10 +184,10 @@ public class ColorOwn {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + alpha;
-		result = prime * result + blue;
-		result = prime * result + green;
-		result = prime * result + red;
+		result = prime * result + a;
+		result = prime * result + b;
+		result = prime * result + g;
+		result = prime * result + r;
 		return result;
 	}
 
@@ -198,16 +203,16 @@ public class ColorOwn {
 			return false;
 		}
 		ColorOwn other = (ColorOwn) obj;
-		if (alpha != other.alpha) {
+		if (a != other.a) {
 			return false;
 		}
-		if (blue != other.blue) {
+		if (b != other.b) {
 			return false;
 		}
-		if (green != other.green) {
+		if (g != other.g) {
 			return false;
 		}
-		if (red != other.red) {
+		if (r != other.r) {
 			return false;
 		}
 		return true;
@@ -215,7 +220,7 @@ public class ColorOwn {
 
 	@Override
 	public String toString() {
-		return "ColorOwn [red=" + red + ", green=" + green + ", blue=" + blue + ", alpha=" + alpha + "]";
+		return "ColorOwn [red=" + r + ", green=" + g + ", blue=" + b + ", alpha=" + a + "]";
 	}
 
 }

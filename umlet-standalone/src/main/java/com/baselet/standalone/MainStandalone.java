@@ -2,12 +2,10 @@ package com.baselet.standalone;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.Timer;
 
 import javax.imageio.ImageIO;
@@ -135,7 +133,7 @@ public class MainStandalone {
 			handler.getFileHandler().doExportAs(outputFormat, new File(outputFileName));
 			printToConsole("Conversion finished: \"" + inputFile.getAbsolutePath() + "\" to \"" + outputFileName + "\"");
 		} catch (Exception e) {
-			log.info(e.getMessage());
+			log.info("", e);
 		}
 	}
 
@@ -198,14 +196,8 @@ public class MainStandalone {
 			outputWriter.close();
 			out.close();
 			return true;
-		} catch (UnsupportedEncodingException e) {
-			log.info(e.getMessage());
-			return false;
-		} catch (FileNotFoundException e) {
-			log.info(e.getMessage());
-			return false;
 		} catch (IOException e) {
-			log.info(e.getMessage());
+			log.info("", e);
 			return false;
 		}
 	}
@@ -219,7 +211,7 @@ public class MainStandalone {
 			Path.safeCreateFile(f, false);
 			new Timer("alreadyRunningChecker", true).schedule(new RunningFileChecker(tmpFile(), Main.getInstance()), 0, 1000);
 		} catch (Exception e) {
-			log.info(e.getMessage());
+			log.info("", e);
 			return true;
 		}
 		return false;
