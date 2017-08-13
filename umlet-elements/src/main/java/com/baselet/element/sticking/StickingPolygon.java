@@ -3,7 +3,6 @@ package com.baselet.element.sticking;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Vector;
 
 import com.baselet.control.basics.geom.Line;
 import com.baselet.control.basics.geom.PointDouble;
@@ -89,7 +88,7 @@ public class StickingPolygon {
 		}
 	}
 
-	private final Vector<StickLine> stick = new Vector<StickLine>();
+	private final ArrayList<StickLine> stick = new ArrayList<>();
 	private PointDouble lastpoint = null;
 	private PointDouble firstpoint = null;
 	private final int elementX;
@@ -144,7 +143,7 @@ public class StickingPolygon {
 		return stick.get(index);
 	}
 
-	public Vector<StickLine> getStickLines() {
+	public ArrayList<StickLine> getStickLines() {
 		return stick;
 	}
 

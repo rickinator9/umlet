@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +58,13 @@ public abstract class NewGridElement implements GridElement {
 
 	private List<String> panelAttributes;
 
+	/**
+	 * ugly workaround to avoid that the Resize().execute() call which calls setSize() on this model updates the model during the
+	 * calculated model update from autoresize. Otherwise the drawer cache would get messed up (it gets cleaned up 2 times in a row and afterwards everything gets drawn 2 times).
+	 * Best testcase is an autoresize element with a background. Write some text and everytime autresize triggers, the background is drawn twice.
+	 */
+	private boolean autoresizePossiblyInProgress = false;
+
 	protected PropertiesParserState state;
 
 	protected final UndoHistory undoStack = new UndoHistory();
@@ -93,13 +99,6 @@ public abstract class NewGridElement implements GridElement {
 	public void setPanelAttributesHelper(String panelAttributes) {
 		this.panelAttributes = Arrays.asList(panelAttributes.split("\n", -1)); // split with -1 to retain empty lines at the end
 	}
-
-	/**
-	 * ugly workaround to avoid that the Resize().execute() call which calls setSize() on this model updates the model during the
-	 * calculated model update from autoresize. Otherwise the drawer cache would get messed up (it gets cleaned up 2 times in a row and afterwards everything gets drawn 2 times).
-	 * Best testcase is an autoresize element with a background. Write some text and everytime autresize triggers, the background is drawn twice.
-	 */
-	private boolean autoresizePossiblyInProgress = false;
 
 	@Override
 	public void updateModelFromText() {
@@ -210,7 +209,7 @@ public abstract class NewGridElement implements GridElement {
 
 	@Override
 	public Set<Direction> getResizeArea(int x, int y) {
-		Set<Direction> returnSet = new HashSet<Direction>();
+		Set<Direction> returnSet = new HashSet<>();
 		if (state.getElementStyle() == ElementStyle.NORESIZE || state.getElementStyle() == ElementStyle.AUTORESIZE) {
 			return returnSet;
 		}
@@ -250,11 +249,10 @@ public abstract class NewGridElement implements GridElement {
 	}
 
 	private final void drawStickingPolygon(DrawHandler drawer) {
-		Rectangle rect = new Rectangle(0, 0, getRealSize().width, getRealSize().height);
-		StickingPolygon poly = this.generateStickingBorder(rect);
+		StickingPolygon poly = this.generateStickingBorder();
 		drawer.setLineType(LineType.DASHED);
 		drawer.setForegroundColor(ColorOwn.STICKING_POLYGON);
-		Vector<? extends Line> lines = poly.getStickLines();
+		ArrayList<? extends Line> lines = poly.getStickLines();
 		drawer.drawLines(lines.toArray(new Line[lines.size()]));
 		drawer.setLineType(LineType.SOLID);
 		drawer.resetColorSettings();
@@ -324,7 +322,7 @@ public abstract class NewGridElement implements GridElement {
 
 	@Override
 	public List<AutocompletionText> getAutocompletionList() {
-		List<AutocompletionText> returnList = new ArrayList<AutocompletionText>();
+		List<AutocompletionText> returnList = new ArrayList<>();
 		addAutocompletionTexts(returnList, state.getSettings().getFacetsForFirstRun());
 		addAutocompletionTexts(returnList, state.getSettings().getFacetsForSecondRun());
 		return returnList;
@@ -458,10 +456,12 @@ public abstract class NewGridElement implements GridElement {
 	}
 
 	private boolean diagonalResize(Collection<Direction> resizeDirection) {
-		return resizeDirection.contains(Direction.UP) && resizeDirection.contains(Direction.RIGHT) ||
-				resizeDirection.contains(Direction.UP) && resizeDirection.contains(Direction.LEFT) ||
-				resizeDirection.contains(Direction.DOWN) && resizeDirection.contains(Direction.LEFT) ||
-				resizeDirection.contains(Direction.DOWN) && resizeDirection.contains(Direction.RIGHT);
+		boolean isTopRight = resizeDirection.contains(Direction.UP) && resizeDirection.contains(Direction.RIGHT);
+		boolean isTopLeft = resizeDirection.contains(Direction.UP) && resizeDirection.contains(Direction.LEFT);
+		boolean isBottomLeft = resizeDirection.contains(Direction.DOWN) && resizeDirection.contains(Direction.LEFT);
+		boolean isBottomRight = resizeDirection.contains(Direction.DOWN) && resizeDirection.contains(Direction.RIGHT);
+
+		return isTopRight || isTopLeft || isBottomLeft || isBottomRight;
 	}
 
 	protected DrawHandlerInterface getHandler() {
@@ -517,35 +517,39 @@ public abstract class NewGridElement implements GridElement {
 			return CursorOwn.DEFAULT;
 		}
 		else {
-			if (resizeDirections.isEmpty()) {
-				return CursorOwn.HAND;
-			}
-			else if (resizeDirections.contains(Direction.UP) && resizeDirections.contains(Direction.RIGHT)) {
-				return CursorOwn.NE;
-			}
-			else if (resizeDirections.contains(Direction.UP) && resizeDirections.contains(Direction.LEFT)) {
-				return CursorOwn.NW;
-			}
-			else if (resizeDirections.contains(Direction.DOWN) && resizeDirections.contains(Direction.LEFT)) {
-				return CursorOwn.SW;
-			}
-			else if (resizeDirections.contains(Direction.DOWN) && resizeDirections.contains(Direction.RIGHT)) {
-				return CursorOwn.SE;
-			}
-			else if (resizeDirections.contains(Direction.UP)) {
-				return CursorOwn.N;
-			}
-			else if (resizeDirections.contains(Direction.RIGHT)) {
-				return CursorOwn.E;
-			}
-			else if (resizeDirections.contains(Direction.DOWN)) {
-				return CursorOwn.S;
-			}
-			else if (resizeDirections.contains(Direction.LEFT)) {
-				return CursorOwn.W;
-			}
-			return CursorOwn.DEFAULT;
+			return evaluateResizeDirections(resizeDirections);
 		}
+	}
+
+	private static CursorOwn evaluateResizeDirections(Set<Direction> resizeDirections) {
+		if (resizeDirections.isEmpty()) {
+			return CursorOwn.HAND;
+		}
+		else if (resizeDirections.contains(Direction.UP) && resizeDirections.contains(Direction.RIGHT)) {
+			return CursorOwn.NE;
+		}
+		else if (resizeDirections.contains(Direction.UP) && resizeDirections.contains(Direction.LEFT)) {
+			return CursorOwn.NW;
+		}
+		else if (resizeDirections.contains(Direction.DOWN) && resizeDirections.contains(Direction.LEFT)) {
+			return CursorOwn.SW;
+		}
+		else if (resizeDirections.contains(Direction.DOWN) && resizeDirections.contains(Direction.RIGHT)) {
+			return CursorOwn.SE;
+		}
+		else if (resizeDirections.contains(Direction.UP)) {
+			return CursorOwn.N;
+		}
+		else if (resizeDirections.contains(Direction.RIGHT)) {
+			return CursorOwn.E;
+		}
+		else if (resizeDirections.contains(Direction.DOWN)) {
+			return CursorOwn.S;
+		}
+		else if (resizeDirections.contains(Direction.LEFT)) {
+			return CursorOwn.W;
+		}
+		return CursorOwn.DEFAULT;
 	}
 
 }

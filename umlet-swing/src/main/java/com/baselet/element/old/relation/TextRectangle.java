@@ -5,13 +5,13 @@ import com.baselet.control.basics.geom.Rectangle;
 public class TextRectangle extends Rectangle {
 	String string;
 
-	public String getString() {
-		return string;
-	}
-
 	public TextRectangle(String s, int a, int b, int c, int d) {
 		super(a, b, c, d);
 		string = s;
+	}
+
+	public String getString() {
+		return string;
 	}
 
 	@Override
@@ -24,6 +24,9 @@ public class TextRectangle extends Rectangle {
 
 	@Override
 	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
 		if (this == obj) {
 			return true;
 		}

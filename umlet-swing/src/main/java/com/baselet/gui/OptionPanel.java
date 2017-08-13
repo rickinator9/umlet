@@ -162,7 +162,7 @@ public class OptionPanel extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent ae) {
 		hideOptionPanel();
 
-		if (ae.getActionCommand().equals("Ok")) {
+		if ("Ok".equals(ae.getActionCommand())) {
 			SharedConfig.getInstance().setShow_stickingpolygon(show_stickingpolygon.isSelected());
 			Config.getInstance().setShow_grid(show_grid.isSelected());
 			Config.getInstance().setEnable_custom_elements(enable_custom_elements.isSelected());

@@ -33,7 +33,7 @@ public class StandaloneGUI extends BaseGUI {
 
 	private final Logger log = LoggerFactory.getLogger(StandaloneGUI.class);
 
-	private final String CANNOT_SET_LOOK_FEEL = "Cannot set LookAndFeel";
+	private static final String CANNOT_SET_LOOK_FEEL = "Cannot set LookAndFeel";
 
 	private JFrame mainFrame;
 
