@@ -21,15 +21,11 @@ public class Config {
 
 	private static Config instance = new Config();
 
-	public static Config getInstance() {
-		return instance;
-	}
-
-	private final String DEFAULT_FILE_HOME = System.getProperty("user.dir");
+	private final String defaultFileHome = System.getProperty("user.dir");
 
 	private String uiManager;
-	private String openFileHome = DEFAULT_FILE_HOME;
-	private String saveFileHome = DEFAULT_FILE_HOME;
+	private String openFileHome = defaultFileHome;
+	private String saveFileHome = defaultFileHome;
 	private String programVersion;
 
 	private String lastUsedPalette = ""; // default is empty string not null because null cannot be stored as property
@@ -39,14 +35,14 @@ public class Config {
 	private String pdfExportFontBoldItalic = "";
 	private boolean checkForUpdates = true;
 	private int printPadding = 20;
-	private Point program_location = new Point(5, 5);
-	private Dimension program_size = new Dimension(960, 750);
-	private int mail_split_position = 250;
-	private int right_split_position = 400;
-	private int main_split_position = 600;
-	private boolean enable_custom_elements = true;
-	private boolean show_grid = false;
-	private boolean start_maximized = false;
+	private Point programLocation = new Point(5, 5);
+	private Dimension programSize = new Dimension(960, 750);
+	private int mailSplitPosition = 250;
+	private int rightSplitPosition = 400;
+	private int mainSplitPosition = 600;
+	private boolean enableCustomElements = true;
+	private boolean showGrid = false;
+	private boolean startMaximized = false;
 	private String defaultFontFamily = Font.SANS_SERIF;
 	private Integer defaultFontsize = 14;
 	private Integer propertiesPanelFontsize = 11;
@@ -57,12 +53,16 @@ public class Config {
 		}
 	}
 
+	public static Config getInstance() {
+		return instance;
+	}
+
 	private void initUiManager() {
+		boolean isMac = SystemInfo.OS == Os.MAC;
+		boolean isEclipsePlugin = Program.getInstance().getRuntimeType() == RuntimeType.ECLIPSE_PLUGIN && "com.sun.java.swing.plaf.gtk.GTKLookAndFeel".equals(UIManager.getSystemLookAndFeelClassName());
+
 		// The default MacOS theme looks ugly, therefore we set metal
-		if (SystemInfo.OS == Os.MAC) {
-			uiManager = "javax.swing.plaf.metal.MetalLookAndFeel";
-		}
-		else if (Program.getInstance().getRuntimeType() == RuntimeType.ECLIPSE_PLUGIN && UIManager.getSystemLookAndFeelClassName().equals("com.sun.java.swing.plaf.gtk.GTKLookAndFeel")) {
+		if (isMac || isEclipsePlugin) {
 			uiManager = "javax.swing.plaf.metal.MetalLookAndFeel";
 		}
 		else {
@@ -79,7 +79,7 @@ public class Config {
 	}
 
 	public String getOpenFileHome() {
-		return getFileHelper(openFileHome, DEFAULT_FILE_HOME);
+		return getFileHelper(openFileHome, defaultFileHome);
 	}
 
 	public void setOpenFileHome(String openFileHome) {
@@ -88,7 +88,7 @@ public class Config {
 	}
 
 	public String getSaveFileHome() {
-		return getFileHelper(saveFileHome, DEFAULT_FILE_HOME);
+		return getFileHelper(saveFileHome, defaultFileHome);
 	}
 
 	private String getFileHelper(String fileLocToCheck, String defaultValue) {
@@ -96,7 +96,9 @@ public class Config {
 			if (new File(fileLocToCheck).exists()) {
 				return fileLocToCheck;
 			}
-		} catch (Exception e) {/* nothing to do */}
+		} catch (Exception e) {
+			log.error("", e);
+		}
 
 		// if stored location doesn't exist or there is an exception while accessing the location, return default value
 		return defaultValue;
@@ -172,67 +174,67 @@ public class Config {
 	}
 
 	public Point getProgram_location() {
-		return program_location;
+		return programLocation;
 	}
 
 	public void setProgram_location(Point program_location) {
-		this.program_location = program_location;
+		programLocation = program_location;
 	}
 
 	public Dimension getProgram_size() {
-		return program_size;
+		return programSize;
 	}
 
 	public void setProgram_size(Dimension program_size) {
-		this.program_size = program_size;
+		programSize = program_size;
 	}
 
 	public int getMail_split_position() {
-		return mail_split_position;
+		return mailSplitPosition;
 	}
 
 	public void setMail_split_position(int mail_split_position) {
-		this.mail_split_position = mail_split_position;
+		mailSplitPosition = mail_split_position;
 	}
 
 	public int getRight_split_position() {
-		return right_split_position;
+		return rightSplitPosition;
 	}
 
 	public void setRight_split_position(int right_split_position) {
-		this.right_split_position = right_split_position;
+		rightSplitPosition = right_split_position;
 	}
 
 	public int getMain_split_position() {
-		return main_split_position;
+		return mainSplitPosition;
 	}
 
 	public void setMain_split_position(int main_split_position) {
-		this.main_split_position = main_split_position;
+		mainSplitPosition = main_split_position;
 	}
 
 	public boolean isEnable_custom_elements() {
-		return enable_custom_elements;
+		return enableCustomElements;
 	}
 
 	public void setEnable_custom_elements(boolean enable_custom_elements) {
-		this.enable_custom_elements = enable_custom_elements;
+		enableCustomElements = enable_custom_elements;
 	}
 
 	public boolean isShow_grid() {
-		return show_grid;
+		return showGrid;
 	}
 
 	public void setShow_grid(boolean show_grid) {
-		this.show_grid = show_grid;
+		showGrid = show_grid;
 	}
 
 	public boolean isStart_maximized() {
-		return start_maximized;
+		return startMaximized;
 	}
 
 	public void setStart_maximized(boolean start_maximized) {
-		this.start_maximized = start_maximized;
+		startMaximized = start_maximized;
 	}
 
 	public String getDefaultFontFamily() {

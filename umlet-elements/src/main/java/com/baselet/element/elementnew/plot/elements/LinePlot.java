@@ -26,7 +26,7 @@ public class LinePlot extends AbstractPlot {
 
 	@Override
 	protected List<AxisShow> defaultDescAxisShow() {
-		return Arrays.asList(AxisShow.Axis, AxisShow.Line, AxisShow.Marker, AxisShow.Text);
+		return Arrays.asList(AxisShow.AXIS, AxisShow.LINE, AxisShow.MARKER, AxisShow.TEXT);
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class LinePlot extends AbstractPlot {
 
 	@Override
 	protected List<AxisList> defaultValueAxisList() {
-		return Arrays.asList(AxisList.Relevant);
+		return Arrays.asList(AxisList.RELEVANT);
 	}
 
 	@Override

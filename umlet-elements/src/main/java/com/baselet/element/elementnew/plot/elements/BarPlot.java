@@ -40,17 +40,17 @@ public class BarPlot extends AbstractPlot {
 
 	@Override
 	protected List<AxisShow> defaultDescAxisShow() {
-		return Arrays.asList(AxisShow.Axis, AxisShow.Marker, AxisShow.Text);
+		return Arrays.asList(AxisShow.AXIS, AxisShow.MARKER, AxisShow.TEXT);
 	}
 
 	@Override
 	protected List<AxisShow> defaultValueAxisShow() {
-		return Arrays.asList(AxisShow.Axis, AxisShow.Line, AxisShow.Marker, AxisShow.Text);
+		return Arrays.asList(AxisShow.AXIS, AxisShow.LINE, AxisShow.MARKER, AxisShow.TEXT);
 	}
 
 	@Override
 	protected List<AxisList> defaultValueAxisList() {
-		return Arrays.asList(AxisList.Relevant);
+		return Arrays.asList(AxisList.RELEVANT);
 	}
 
 	@Override

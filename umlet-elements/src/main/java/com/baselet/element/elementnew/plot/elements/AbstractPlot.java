@@ -49,10 +49,10 @@ public abstract class AbstractPlot {
 
 	private void setupAxis() {
 		plot.getAxisConfig().enableDescAxis(
-				plotState.getValueListValidated(AxisShow.getKeyDescAxis(), PlotConstants.toStringList(defaultDescAxisShow()), PlotConstants.toStringList(AxisShow.values()), false));
+				plotState.getValueListValidated(AxisShow.KEY_DESC_AXIS, PlotConstants.toStringList(defaultDescAxisShow()), PlotConstants.toStringList(AxisShow.values()), false));
 		plot.getAxisConfig().enableValueAxis(
-				plotState.getValueListValidated(AxisShow.getKeyValueAxis(), PlotConstants.toStringList(defaultValueAxisShow()), PlotConstants.toStringList(AxisShow.values()), false),
-				plotState.getValueListValidated(AxisList.getKey(), PlotConstants.toStringList(defaultValueAxisList()), PlotConstants.toStringList(AxisList.values()), true));
+				plotState.getValueListValidated(AxisShow.KEY_VALUE_AXIS, PlotConstants.toStringList(defaultValueAxisShow()), PlotConstants.toStringList(AxisShow.values()), false),
+				plotState.getValueListValidated(AxisList.KEY, PlotConstants.toStringList(defaultValueAxisList()), PlotConstants.toStringList(AxisList.values()), true));
 	}
 
 	private void setupAbstractPlot() {
