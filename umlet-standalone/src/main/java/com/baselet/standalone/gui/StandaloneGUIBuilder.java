@@ -25,6 +25,9 @@ import javax.swing.JToggleButton;
 import javax.swing.ToolTipManager;
 import javax.swing.WindowConstants;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.baselet.control.config.Config;
 import com.baselet.control.constants.Constants;
 import com.baselet.control.enums.Program;
@@ -35,6 +38,8 @@ import com.baselet.gui.listener.GUIListener;
 import com.baselet.gui.listener.UmletWindowFocusListener;
 
 public class StandaloneGUIBuilder extends BaseGUIBuilder {
+
+	private final Logger log = LoggerFactory.getLogger(StandaloneGUIBuilder.class);
 
 	private JComboBox zoomComboBox;
 	private ZoomListener zoomListener;
@@ -69,7 +74,11 @@ public class StandaloneGUIBuilder extends BaseGUIBuilder {
 		mainFrame.setBounds(Config.getInstance().getProgram_location().x, Config.getInstance().getProgram_location().y, Config.getInstance().getProgram_size().width, Config.getInstance().getProgram_size().height);
 		mainFrame.setTitle(Program.getInstance().getProgramName() + " - Free UML Tool for Fast UML Diagrams");
 
-		setImage(mainFrame);
+		try {
+			setImage(mainFrame);
+		} catch (Exception e) {
+			log.error("", e);
+		}
 
 		if (Config.getInstance().isStart_maximized()) {
 			// If Main starts maximized we set fixed bounds and must set the frame visible
@@ -94,20 +103,22 @@ public class StandaloneGUIBuilder extends BaseGUIBuilder {
 	/**
 	 * set several image sizes of umlet_logo*.png
 	 */
-	private void setImage(JFrame mainFrame) {
-		ArrayList<BufferedImage> images = new ArrayList<BufferedImage>();
+	private void setImage(JFrame mainFrame) throws IOException {
+		ArrayList<BufferedImage> images = new ArrayList<>();
 		for (Integer i : new int[] { 16, 20, 24, 32, 40, 48, 64 }) {
 			InputStream is = null;
 			try {
 				is = this.getClass().getClassLoader().getResourceAsStream(Program.getInstance().getProgramName().toLowerCase() + "_logo" + i + ".png");
 				images.add(ImageIO.read(is));
 			} catch (IOException e) {
-				throw new RuntimeException("Cannot read image", e);
+				throw new IOException("Cannot read image", e);
 			} finally {
 				if (is != null) {
 					try {
 						is.close();
-					} catch (IOException e) {}
+					} catch (IOException e) {
+						log.error("Unable to close stream", e);
+					}
 				}
 			}
 		}
