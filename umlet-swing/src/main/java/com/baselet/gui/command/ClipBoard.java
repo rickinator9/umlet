@@ -18,13 +18,13 @@ import com.baselet.gui.CurrentGui;
 /** Copies and Pastes images to the system clipboard. Requires Java 2, v1.4. */
 public class ClipBoard implements Transferable {
 
-	private final Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+	private final Clipboard systemClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 	private List<GridElement> entities;
 
-	private static ClipBoard _instance = new ClipBoard();
+	private static ClipBoard instance = new ClipBoard();
 
 	public static ClipBoard getInstance() {
-		return _instance;
+		return instance;
 	}
 
 	public void copyAndZoomToDefaultLevel(List<GridElement> entities, DiagramHandler handler) {
@@ -33,7 +33,7 @@ public class ClipBoard implements Transferable {
 		}
 		// clipboard zooms entities to 100% (to make them zoom-independent)
 		// therefore we need to set a DiagramHandler with 100% zoom and resize the elements
-		this.entities = new ArrayList<GridElement>(entities.size());
+		this.entities = new ArrayList<>(entities.size());
 		DiagramHandler dhNew = new DiagramHandler(null);
 		for (GridElement entitiy : entities) {
 			this.entities.add(ElementFactorySwing.createCopy(entitiy, dhNew));
@@ -41,8 +41,8 @@ public class ClipBoard implements Transferable {
 		DiagramHandler.zoomEntities(handler.getGridSize(), Constants.DEFAULTGRIDSIZE, this.entities);
 		CurrentGui.getInstance().getGui().enablePasteMenuEntry();
 
-		if (clipboard != null) { // Issue 230: copy after zooming the entities
-			clipboard.setContents(this, null);
+		if (systemClipboard != null) { // Issue 230: copy after zooming the entities
+			systemClipboard.setContents(this, null);
 		}
 	}
 
