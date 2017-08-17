@@ -9,35 +9,9 @@ import com.baselet.element.interfaces.GridElement;
 import com.baselet.gui.CurrentGui;
 import com.baselet.gui.pane.OwnSyntaxPane;
 
-public class CustomCodePropertyChanged extends Command {
-	// private GridElement _entity;
-
-	private String _newState;
-	private String _oldState;
-	private int _oldCaret;
-	private int _newCaret;
-
-	public String getNewState() {
-		return _newState;
-	}
-
-	public String getOldState() {
-		return _oldState;
-	}
-
-	public int getOldCaret() {
-		return _oldCaret;
-	}
-
-	public int getNewCaret() {
-		return _newCaret;
-	}
-
+public class CustomCodePropertyChanged extends StateCaretCommand {
 	public CustomCodePropertyChanged(String oldState, String newState, int oldCaret, int newCaret) {
-		_newState = newState;
-		_oldState = oldState;
-		_newCaret = newCaret;
-		_oldCaret = oldCaret;
+		super(oldState, newState, oldCaret, newCaret);
 	}
 
 	@Override
@@ -56,13 +30,13 @@ public class CustomCodePropertyChanged extends Command {
 		}
 
 		if (gridElement != null && HandlerElementMap.getHandlerForElement(gridElement) instanceof CustomPreviewHandler) {
-			gridElement.setPanelAttributes(_newState);
+			gridElement.setPanelAttributes(newState);
 
 			OwnSyntaxPane pane = CurrentGui.getInstance().getGui().getPropertyPane();
 			pane.switchToElement(gridElement);
 
-			if (pane.getText().length() >= _newCaret) {
-				pane.getTextComponent().setCaretPosition(_newCaret);
+			if (pane.getText().length() >= newCaret) {
+				pane.getTextComponent().setCaretPosition(newCaret);
 			}
 
 			gridElement.repaint();
@@ -72,7 +46,6 @@ public class CustomCodePropertyChanged extends Command {
 	@Override
 	public void undo(DiagramHandler handler) {
 		// AB: Do not call super.undo() which would deselect the entity
-		// super.undo(handler);
 
 		GridElement gridElement = Main.getInstance().getEditedGridElement();
 
@@ -86,13 +59,13 @@ public class CustomCodePropertyChanged extends Command {
 		}
 
 		if (gridElement != null && HandlerElementMap.getHandlerForElement(gridElement) instanceof CustomPreviewHandler) {
-			gridElement.setPanelAttributes(_oldState);
+			gridElement.setPanelAttributes(oldState);
 
 			OwnSyntaxPane pane = CurrentGui.getInstance().getGui().getPropertyPane();
 			pane.switchToElement(gridElement);
 
-			if (pane.getText().length() >= _oldCaret) {
-				pane.getTextComponent().setCaretPosition(_oldCaret);
+			if (pane.getText().length() >= oldCaret) {
+				pane.getTextComponent().setCaretPosition(oldCaret);
 			}
 
 			gridElement.repaint();
