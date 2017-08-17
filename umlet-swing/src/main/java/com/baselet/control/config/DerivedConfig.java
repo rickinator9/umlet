@@ -4,6 +4,10 @@ import java.awt.Font;
 
 public class DerivedConfig {
 
+	private DerivedConfig() {
+
+	}
+
 	public static Font getPanelHeaderFont() {
 		return new Font(Font.SANS_SERIF, Font.BOLD, Config.getInstance().getPropertiesPanelFontsize());
 	}

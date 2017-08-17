@@ -119,7 +119,7 @@ public class OldRelationListener extends GridElementListener {
 	public void mousePressed(MouseEvent me) {
 		super.mousePressed(me);
 		if (me.getButton() == MouseEvent.BUTTON1) {
-			IS_DRAGGING = false;
+			isDragging = false;
 			Relation rel = (Relation) me.getComponent();
 
 			int where = rel.getLinePoint(new Point(me.getX(), me.getY()));
@@ -129,13 +129,13 @@ public class OldRelationListener extends GridElementListener {
 			}
 			else if (rel.isWholeLine(me.getX(), me.getY())) {
 				IS_DRAGGING_LINE = true;
-				IS_DRAGGING = true;
+				isDragging = true;
 			}
 			else if (me.getButton() == MouseEvent.BUTTON2) {
-				IS_DRAGGING_DIAGRAM = true;
+				isDraggingDiagram = true;
 				IS_DRAGGING_LINE = false;
 				IS_DRAGGING_LINEPOINT = false;
-				IS_DRAGGING = false;
+				isDragging = false;
 			}
 		}
 	}
@@ -186,10 +186,10 @@ public class OldRelationListener extends GridElementListener {
 		if (disableElementMovement()) {
 			return;
 		}
-		if (IS_DRAGGING) {
+		if (isDragging) {
 			return;
 		}
-		if (IS_DRAGGING_DIAGRAM) {
+		if (isDraggingDiagram) {
 			return;
 		}
 

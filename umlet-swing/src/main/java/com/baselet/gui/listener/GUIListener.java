@@ -2,9 +2,9 @@ package com.baselet.gui.listener;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Vector;
 
 import com.baselet.control.basics.geom.Point;
 import com.baselet.control.config.SharedConfig;
@@ -76,7 +76,7 @@ public class GUIListener implements KeyListener {
 					}
 
 					Point opos = getOriginalPos(diffx, diffy, entitiesToBeMoved.iterator().next());
-					Vector<Command> ALL_MOVE_COMMANDS = GridElementListener.calculateFirstMoveCommands(diffx, diffy, opos, entitiesToBeMoved, e.isShiftDown(), true, handler, Collections.<Direction> emptySet());
+					ArrayList<Command> ALL_MOVE_COMMANDS = GridElementListener.calculateFirstMoveCommands(new Point(diffx, diffy), opos, entitiesToBeMoved, e.isShiftDown(), true, handler, Collections.<Direction> emptySet());
 					handler.getController().executeCommand(new Macro(ALL_MOVE_COMMANDS));
 					CurrentDiagram.getInstance().getDiagramHandler().getDrawPanel().updatePanelAndScrollbars();
 				}

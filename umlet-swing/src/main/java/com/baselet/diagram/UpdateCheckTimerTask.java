@@ -12,16 +12,16 @@ public class UpdateCheckTimerTask extends TimerTask {
 
 	private static final UpdateCheckTimerTask instance = new UpdateCheckTimerTask();
 
+	private String fileName;
+
 	private UpdateCheckTimerTask() {}
 
 	public static UpdateCheckTimerTask getInstance() {
 		return instance;
 	}
 
-	private String filename;
-
 	public String getFilename() {
-		return filename;
+		return fileName;
 	}
 
 	@Override
@@ -29,7 +29,7 @@ public class UpdateCheckTimerTask extends TimerTask {
 		try {
 			String newVersionText = getNewVersionTextWithStartupHtmlFormat();
 			if (newVersionText != null) { // The text is != null if a new version exists
-				filename = StartUpHelpText.createTempFileWithText(newVersionText);
+				fileName = StartUpHelpText.createTempFileWithText(newVersionText);
 			}
 		} catch (Exception e) {
 			StartUpHelpText.log.error("Error at checking for new " + Program.getInstance().getProgramName() + " version", e);
@@ -48,9 +48,8 @@ public class UpdateCheckTimerTask extends TimerTask {
 
 	private static String wrapUpdateTextIntoStartupFileHtmlStyle(String textFromURL) throws FileNotFoundException {
 		StringBuilder sb = new StringBuilder("");
-		Scanner sc = null;
-		try {
-			sc = new Scanner(StartUpHelpText.getStartUpFileName());
+		try (
+				Scanner sc = new Scanner(StartUpHelpText.getStartUpFileName());) {
 			while (sc.hasNextLine()) {
 				String line = sc.nextLine();
 				if (line.contains("<body>")) {
@@ -59,10 +58,6 @@ public class UpdateCheckTimerTask extends TimerTask {
 				sb.append(line).append("\n");
 			}
 			sb.append(textFromURL).append("</body></html>");
-		} finally {
-			if (sc != null) {
-				sc.close();
-			}
 		}
 		return sb.toString();
 	}

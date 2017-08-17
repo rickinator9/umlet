@@ -52,7 +52,7 @@ public class PaletteEntityListener extends GridElementListener {
 		super.mousePressed(me);
 		List<GridElement> selectedEntities = handler.getDrawPanel().getSelector().getSelectedElements();
 		for (GridElement currentEntity : selectedEntities) {
-			if (IS_DRAGGING) {
+			if (isDragging) {
 				previousDraggingLocation.put(currentEntity, currentEntity.getRectangle());
 			}
 		}
@@ -63,7 +63,7 @@ public class PaletteEntityListener extends GridElementListener {
 		super.mouseDragged(me);
 		GridElement entity = handler.getDrawPanel().getElementToComponent(me.getComponent());
 
-		if (IS_DRAGGED_FROM_PALETTE) {
+		if (isDraggedFromPalette) {
 			moveDraggedEntities();
 		}
 		else if (entity.getRectangle().x + entity.getRectangle().width <= 0) {
@@ -109,8 +109,8 @@ public class PaletteEntityListener extends GridElementListener {
 		currentDiagram.getHandler().setGridAndZoom(Constants.DEFAULTGRIDSIZE, false);
 		handler.setGridAndZoom(Constants.DEFAULTGRIDSIZE, false);
 
-		IS_DRAGGING = false;
-		IS_DRAGGED_FROM_PALETTE = true;
+		isDragging = false;
+		isDraggedFromPalette = true;
 
 		for (GridElement currentEntity : selectedEntities) {
 			GridElement copiedEntity = copyEntity(currentEntity);

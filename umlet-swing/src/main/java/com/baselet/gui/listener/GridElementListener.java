@@ -2,11 +2,11 @@ package com.baselet.gui.listener;
 
 import java.awt.Component;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
@@ -47,17 +47,17 @@ public class GridElementListener extends UniversalListener {
 
 	private static final Logger log = LoggerFactory.getLogger(GridElementListener.class);
 
-	protected boolean IS_DRAGGING = false;
-	protected boolean IS_DRAGGING_DIAGRAM = false;
-	protected boolean IS_DRAGGED_FROM_PALETTE = false;
-	private boolean FIRST_DRAG = true;
-	private Vector<Command> FIRST_MOVE_COMMANDS = null;
-	private Point POINT_BEFORE_MOVE = null;
-	protected boolean DESELECT_MULTISEL = false;
-	private boolean LASSO_ACTIVE = false;
+	protected boolean isDragging = false;
+	protected boolean isDraggingDiagram = false;
+	protected boolean isDraggedFromPalette = false;
+	private boolean firstDrag = true;
+	private ArrayList<Command> firstMoveCommands = null;
+	private Point pointBeforeMove = null;
+	protected boolean deselectMultisel = false;
+	private boolean lassoActive = false;
 
 	private Rectangle lassoToleranceRectangle;
-	private final int lassoTolerance = 2;
+	private static final int lassoTolerance = 2;
 
 	private Point mousePressedPoint;
 	private Set<Direction> resizeDirections;
@@ -74,7 +74,7 @@ public class GridElementListener extends UniversalListener {
 		GridElement e = getGridElement(me);
 
 		// Lasso selection is only activated if mouse is moved more than lasso_tolerance to avoid accidential activation instead of selecting the entity
-		if (LASSO_ACTIVE && lassoToleranceRectangle != null && !lassoToleranceRectangle.contains(getOffset(me))) {
+		if (lassoActive && lassoToleranceRectangle != null && !lassoToleranceRectangle.contains(getOffset(me))) {
 			dragLasso(me, e);
 			return;
 		}
@@ -83,10 +83,10 @@ public class GridElementListener extends UniversalListener {
 			return;
 		}
 
-		if (IS_DRAGGING_DIAGRAM) {
+		if (isDraggingDiagram) {
 			dragDiagram();
 		}
-		if (IS_DRAGGING) {
+		if (isDragging) {
 			dragEntity(me.isShiftDown(), e);
 		}
 	}
@@ -104,7 +104,7 @@ public class GridElementListener extends UniversalListener {
 	public void mouseMoved(MouseEvent me) {
 		super.mouseMoved(me);
 		GridElement e = getGridElement(me);
-		if (IS_DRAGGED_FROM_PALETTE) {
+		if (isDraggedFromPalette) {
 			log.debug("mouseMoved with dragged");
 			e.setLocation(me.getX() - 100, me.getY() - 20);
 		}
@@ -148,7 +148,7 @@ public class GridElementListener extends UniversalListener {
 			showContextMenu(e, me.getX(), me.getY());
 		}
 		else if (me.getButton() == MouseEvent.BUTTON2) {
-			IS_DRAGGING_DIAGRAM = true;
+			isDraggingDiagram = true;
 		}
 		else if (me.getButton() == MouseEvent.BUTTON1) {
 			if (me.getClickCount() == 1) {
@@ -168,10 +168,10 @@ public class GridElementListener extends UniversalListener {
 			initializeLasso();
 		}
 
-		IS_DRAGGING = true;
+		isDragging = true;
 		if ((me.getModifiers() & SystemInfo.META_KEY.getMask()) != 0) {
 			if (selector.isSelected(e)) {
-				DESELECT_MULTISEL = true;
+				deselectMultisel = true;
 			}
 			else {
 				selector.select(e);
@@ -195,44 +195,42 @@ public class GridElementListener extends UniversalListener {
 		cmd = new AddElement(e, me.getRectangle().x + gridSize * 2, me.getRectangle().y + gridSize * 2);
 		controller.executeCommand(cmd);
 		selector.selectOnly(e);
-		eListener.FIRST_DRAG = true;
+		eListener.firstDrag = true;
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent me) {
 		super.mouseReleased(me);
-		// log.debug("Entity mouse released");
-		if (IS_DRAGGED_FROM_PALETTE) {
-			IS_DRAGGED_FROM_PALETTE = false;
+		if (isDraggedFromPalette) {
+			isDraggedFromPalette = false;
 		}
 
 		GridElement e = getGridElement(me);
 
-		if ((me.getModifiers() & SystemInfo.META_KEY.getMask()) != 0) {
-			if (selector.isSelected(e) && DESELECT_MULTISEL) {
-				selector.deselect(e);
-			}
+		if ((me.getModifiers() & SystemInfo.META_KEY.getMask()) != 0 &&
+			selector.isSelected(e) && deselectMultisel) {
+			selector.deselect(e);
 		}
-		if (IS_DRAGGING && !FIRST_DRAG) { // if mouse is dragged and element really has been dragged around execute moveend
+		if (isDragging && !firstDrag) { // if mouse is dragged and element really has been dragged around execute moveend
 			controller.executeCommand(new MoveEnd(e));
 		}
 
-		DESELECT_MULTISEL = false;
-		IS_DRAGGING = false;
-		IS_DRAGGING_DIAGRAM = false;
-		FIRST_DRAG = true;
-		FIRST_MOVE_COMMANDS = null;
-		POINT_BEFORE_MOVE = null;
+		deselectMultisel = false;
+		isDragging = false;
+		isDraggingDiagram = false;
+		firstDrag = true;
+		firstMoveCommands = null;
+		pointBeforeMove = null;
 
-		if (LASSO_ACTIVE) {
-			LASSO_ACTIVE = false;
+		if (lassoActive) {
+			lassoActive = false;
 			((JComponent) me.getComponent()).remove(selector.getSelectorFrame());
 		}
 	}
 
 	private void initializeLasso() {
 		lassoToleranceRectangle = new Rectangle(mousePressedPoint.x - lassoTolerance, mousePressedPoint.y - lassoTolerance, lassoTolerance * 2, lassoTolerance * 2);
-		LASSO_ACTIVE = true;
+		lassoActive = true;
 		SelectorFrame selframe = selector.getSelectorFrame();
 		selframe.setLocation(Converter.convert(mousePressedPoint));
 		selframe.setSize(1, 1);
@@ -258,7 +256,7 @@ public class GridElementListener extends UniversalListener {
 	 */
 	private void dragEntity(boolean isShiftKeyDown, GridElement mainElement) {
 
-		DESELECT_MULTISEL = false;
+		deselectMultisel = false;
 
 		Point newp = getNewCoordinate();
 		Point oldp = getOldCoordinate();
@@ -269,30 +267,30 @@ public class GridElementListener extends UniversalListener {
 		if (!resizeDirections.isEmpty()) {
 			elementsToMove = Arrays.asList(mainElement);
 		}
-		if (FIRST_MOVE_COMMANDS == null) {
-			POINT_BEFORE_MOVE = mousePressedPoint; // issue #358: use position of mouse click BEFORE starting to drag; must be exact coordinates eg for Relation which calculates distances from lines (to possibly drag new points out of it)
-			FIRST_MOVE_COMMANDS = calculateFirstMoveCommands(diffx, diffy, POINT_BEFORE_MOVE, elementsToMove, isShiftKeyDown, false, handler, resizeDirections);
+		if (firstMoveCommands == null) {
+			pointBeforeMove = mousePressedPoint; // issue #358: use position of mouse click BEFORE starting to drag; must be exact coordinates eg for Relation which calculates distances from lines (to possibly drag new points out of it)
+			firstMoveCommands = calculateFirstMoveCommands(new Point(diffx, diffy), pointBeforeMove, elementsToMove, isShiftKeyDown, false, handler, resizeDirections);
 		}
 		else if (diffx != 0 || diffy != 0) {
-			Vector<Command> commands = continueDragging(diffx, diffy, POINT_BEFORE_MOVE, elementsToMove);
-			POINT_BEFORE_MOVE = new Point(POINT_BEFORE_MOVE.getX() + diffx, POINT_BEFORE_MOVE.getY() + diffy);
+			ArrayList<Command> commands = continueDragging(diffx, diffy, pointBeforeMove, elementsToMove);
+			pointBeforeMove = new Point(pointBeforeMove.getX() + diffx, pointBeforeMove.getY() + diffy);
 			controller.executeCommand(new Macro(commands));
-			FIRST_DRAG = false;
+			firstDrag = false;
 		}
 	}
 
-	static Vector<Command> calculateFirstMoveCommands(int diffx, int diffy, Point oldp, Collection<GridElement> entitiesToBeMoved, boolean isShiftKeyDown, boolean useSetLocation, DiagramHandler handler, Set<Direction> directions) {
-		Vector<Move> moveCommands = new Vector<Move>();
-		Vector<OldMoveLinePoint> linepointCommands = new Vector<OldMoveLinePoint>();
+	static ArrayList<Command> calculateFirstMoveCommands(Point diff, Point oldp, Collection<GridElement> entitiesToBeMoved, boolean isShiftKeyDown, boolean useSetLocation, DiagramHandler handler, Set<Direction> directions) {
+		ArrayList<Move> moveCommands = new ArrayList<>();
+		ArrayList<OldMoveLinePoint> linepointCommands = new ArrayList<>();
 		List<com.baselet.element.relation.Relation> stickables = handler.getDrawPanel().getStickables(entitiesToBeMoved);
 		for (GridElement ge : entitiesToBeMoved) {
 			// reduce stickables to those which really stick at the element at move-start
 			StickableMap stickingStickables = Stickables.getStickingPointsWhichAreConnectedToStickingPolygon(ge.generateStickingBorder(), stickables);
-			moveCommands.add(new Move(directions, ge, diffx, diffy, oldp, isShiftKeyDown, true, useSetLocation, stickingStickables));
+			moveCommands.add(new Move(directions, ge, diff.x, diff.y, oldp, isShiftKeyDown, true, useSetLocation, stickingStickables));
 
-			handleStickingOfOldRelation(diffx, diffy, entitiesToBeMoved, handler, directions, linepointCommands, ge);
+			handleStickingOfOldRelation(diff.x, diff.y, entitiesToBeMoved, handler, directions, linepointCommands, ge);
 		}
-		Vector<Command> allCommands = new Vector<Command>();
+		ArrayList<Command> allCommands = new ArrayList<>();
 		allCommands.addAll(moveCommands);
 		allCommands.addAll(linepointCommands);
 		return allCommands;
@@ -300,14 +298,14 @@ public class GridElementListener extends UniversalListener {
 
 	// for elements which are not OldRelation themselves and if sticking is not disabled, handle the sticking-movement of old relations. SHOULD BE REMOVED AS SOON AS THE OLDRELATION CLASS IS REMOVED!
 	@Deprecated
-	private static void handleStickingOfOldRelation(int diffx, int diffy, Collection<GridElement> entitiesToBeMoved, DiagramHandler handler, Set<Direction> directions, Vector<OldMoveLinePoint> linepointCommands, GridElement ge) {
+	private static void handleStickingOfOldRelation(int diffx, int diffy, Collection<GridElement> entitiesToBeMoved, DiagramHandler handler, Set<Direction> directions, List<OldMoveLinePoint> linepointCommands, GridElement ge) {
 		boolean stickingDisabled = !SharedConfig.getInstance().isStickingEnabled() || handler instanceof PaletteHandler;
 		if (!(ge instanceof Relation || stickingDisabled)) {
 			StickingPolygon stick = ge.generateStickingBorder();
 			if (stick != null && directions.isEmpty()) { // sticking on resizing is disabled for old relations
-				Vector<OldRelationLinePoint> affectedRelationPoints = OldResize.getStickingRelationLinePoints(handler, stick);
+				List<OldRelationLinePoint> affectedRelationPoints = OldResize.getStickingRelationLinePoints(handler, stick);
 				for (int j = 0; j < affectedRelationPoints.size(); j++) {
-					OldRelationLinePoint tmpRlp = affectedRelationPoints.elementAt(j);
+					OldRelationLinePoint tmpRlp = affectedRelationPoints.get(j);
 					if (entitiesToBeMoved.contains(tmpRlp.getRelation())) {
 						continue;
 					}
@@ -324,13 +322,13 @@ public class GridElementListener extends UniversalListener {
 	 * @param directions
 	 * @return
 	 */
-	private Vector<Command> continueDragging(int diffx, int diffy, Point oldp, List<GridElement> elementsToMove) {
+	private ArrayList<Command> continueDragging(int diffx, int diffy, Point oldp, List<GridElement> elementsToMove) {
 		boolean useSetLocation = elementsToMove.size() != 1; // if >1 elements are selected they will be moved
-		Vector<Command> tmpVector = new Vector<Command>();
-		for (Command command : FIRST_MOVE_COMMANDS) { // use first move commands to identify the necessary commands and moved entities
+		ArrayList<Command> tmpVector = new ArrayList<>();
+		for (Command command : firstMoveCommands) { // use first move commands to identify the necessary commands and moved entities
 			if (command instanceof Move) {
 				Move m = (Move) command;
-				tmpVector.add(new Move(resizeDirections, m.getEntity(), diffx, diffy, oldp, m.isShiftKeyDown(), FIRST_DRAG, useSetLocation, m.getStickables()));
+				tmpVector.add(new Move(resizeDirections, m.getEntity(), diffx, diffy, oldp, m.isShiftKeyDown(), firstDrag, useSetLocation, m.getStickables()));
 			}
 			else if (command instanceof OldMoveLinePoint) {
 				OldMoveLinePoint m = (OldMoveLinePoint) command;
