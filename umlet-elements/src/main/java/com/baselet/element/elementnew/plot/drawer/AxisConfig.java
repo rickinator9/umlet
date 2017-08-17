@@ -1,6 +1,7 @@
 package com.baselet.element.elementnew.plot.drawer;
 
 import java.util.List;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import com.baselet.element.elementnew.plot.parser.PlotConstants.AxisList;
@@ -8,10 +9,15 @@ import com.baselet.element.elementnew.plot.parser.PlotConstants.AxisShow;
 
 public class AxisConfig {
 
-	private boolean descAxisLine, valueAxisLine;
-	private boolean descAxisMarkers, valueAxisMarkers;
-	private boolean descAxisText, valueAxisText;
-	private boolean descAxisGray, valueAxisGray;
+	private boolean descAxisLine;
+	private boolean descAxisMarkers;
+	private boolean descAxisText;
+	private boolean descAxisGray;
+
+	private boolean valueAxisLine;
+	private boolean valueAxisMarkers;
+	private boolean valueAxisText;
+	private boolean valueAxisGray;
 
 	private TreeSet<Double> valueAxisList;
 	private boolean showRelevantValues;
@@ -60,7 +66,7 @@ public class AxisConfig {
 			try {
 				valueAxisList.add(Double.parseDouble(v));
 			} catch (Exception e) {
-				throw new RuntimeException("Value must be a double: " + v, e);
+				throw new IllegalArgumentException("Value must be a double: " + v, e);
 			}
 		}
 	}
@@ -165,7 +171,7 @@ public class AxisConfig {
 		this.valueSegment = valueSegment;
 	}
 
-	public TreeSet<Double> setValueAxisList(TreeSet<Double> valuesSorted) {
+	public SortedSet<Double> setValueAxisList(SortedSet<Double> valuesSorted) {
 		if (showRelevantValues) {
 			valueAxisList.addAll(valuesSorted);
 		}
