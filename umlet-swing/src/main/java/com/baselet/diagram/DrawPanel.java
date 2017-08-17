@@ -393,10 +393,10 @@ public class DrawPanel extends JLayeredPane implements Printable {
 
 	private boolean determineHorizontalScrollbarVisibility(Rectangle diaWithoutWhite, Dimension viewSize, int verSbWidth) {
 		// If the horizontal scrollbar is on the most left point && the the right end of the diagram without whitespace <= the viewable width incl. the width of the vertical scrollbar we hide the horizontal scrollbar
-		if (scr.getHorizontalScrollBar().getValue() < handler.getGridSize() && diaWithoutWhite.getX() + diaWithoutWhite.getWidth() <= viewSize.getWidth() + verSbWidth) {
-			return false;
-		}
-		else if (scr.getHorizontalScrollBar().getValue() < handler.getGridSize() && getViewableDiagrampanelSize().width + scr.getHorizontalScrollBar().getValue() == diaWithoutWhite.getX() + diaWithoutWhite.getWidth()) {
+		boolean isHorizontalScrollbarLeft = scr.getHorizontalScrollBar().getValue() < handler.getGridSize();
+		boolean isElementWithinView = diaWithoutWhite.getX() + diaWithoutWhite.getWidth() <= viewSize.getWidth() + verSbWidth;
+		boolean isElementWithinViewablePanel = getViewableDiagrampanelSize().width + scr.getHorizontalScrollBar().getValue() == diaWithoutWhite.getX() + diaWithoutWhite.getWidth();
+		if (isHorizontalScrollbarLeft && (isElementWithinView || isElementWithinViewablePanel)) {
 			return false;
 		}
 		else {
@@ -405,10 +405,10 @@ public class DrawPanel extends JLayeredPane implements Printable {
 	}
 
 	private boolean determineVerticalScrollbarVisibility(Rectangle diaWithoutWhite, Dimension viewSize, int horSbHeight) {
-		if (scr.getVerticalScrollBar().getValue() < handler.getGridSize() && diaWithoutWhite.getY() + diaWithoutWhite.getHeight() <= viewSize.getHeight() + horSbHeight) {
-			return false;
-		}
-		else if (scr.getVerticalScrollBar().getValue() < handler.getGridSize() && getViewableDiagrampanelSize().height + scr.getVerticalScrollBar().getValue() == diaWithoutWhite.getY() + diaWithoutWhite.getHeight()) {
+		boolean isVerticalScrollbarTop = scr.getVerticalScrollBar().getValue() < handler.getGridSize();
+		boolean isElementWithinView = diaWithoutWhite.getY() + diaWithoutWhite.getHeight() <= viewSize.getHeight() + horSbHeight;
+		boolean isElementWithinViewablePanel = getViewableDiagrampanelSize().height + scr.getVerticalScrollBar().getValue() == diaWithoutWhite.getY() + diaWithoutWhite.getHeight();
+		if (isVerticalScrollbarTop && (isElementWithinView || isElementWithinViewablePanel)) {
 			return false;
 		}
 		else {

@@ -58,7 +58,7 @@ public class AxisConfig {
 
 		// other than the special value "relevant", only double values are allowed
 		showRelevantValues = valueList.contains(AxisList.RELEVANT.getValue());
-		valueAxisList = new TreeSet<Double>();
+		valueAxisList = new TreeSet<>();
 		for (String v : valueList) {
 			if ("".equals(v) || AxisList.RELEVANT.getValue().equals(v)) {
 				continue;

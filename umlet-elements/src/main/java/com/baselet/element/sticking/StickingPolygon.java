@@ -95,7 +95,7 @@ public class StickingPolygon {
 	private final int elementY;
 
 	// store all points for the copyZoomed() method
-	private final List<PointDouble> allPoints = new ArrayList<PointDouble>();
+	private final List<PointDouble> allPoints = new ArrayList<>();
 
 	public StickingPolygon(int elementX, int elementY) {
 		this.elementX = elementX;
@@ -130,8 +130,8 @@ public class StickingPolygon {
 
 	public void addRectangle(int x, int y, int width, int height) {
 		addPoint(x, y);
-		addPoint(x + width, y);
-		addPoint(x + width, y + height);
+		addPoint((double) x + (double) width, y);
+		addPoint((double) x + (double) width, (double) y + (double) height);
 		addPoint(x, y + height, true);
 	}
 
@@ -143,7 +143,7 @@ public class StickingPolygon {
 		return stick.get(index);
 	}
 
-	public ArrayList<StickLine> getStickLines() {
+	public List<StickLine> getStickLines() {
 		return stick;
 	}
 

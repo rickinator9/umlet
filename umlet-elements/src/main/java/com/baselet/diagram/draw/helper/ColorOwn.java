@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 
 public class ColorOwn {
 
-	private final static Logger log = LoggerFactory.getLogger(ColorOwn.class);
-	public final static String EXAMPLE_TEXT = "color string (green,...) or code (#3c7a00,...)";
+	private static final Logger log = LoggerFactory.getLogger(ColorOwn.class);
+	public static final String EXAMPLE_TEXT = "color string (green,...) or code (#3c7a00,...)";
 
 	public enum Transparency {
 		FOREGROUND(255), FULL_TRANSPARENT(0), DEPRECATED_WARNING(175), BACKGROUND(125), SELECTION_BACKGROUND(20);

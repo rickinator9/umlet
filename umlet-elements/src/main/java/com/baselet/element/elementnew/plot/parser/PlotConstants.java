@@ -89,18 +89,18 @@ public class PlotConstants {
 		public String getValue();
 	}
 
-	public static enum PlotType implements PlotSetting {
+	public enum PlotType implements PlotSetting {
 		BAR, LINE, PIE, SCATTER;
+
+		public static final String KEY = "type";
 
 		@Override
 		public String getValue() {
 			return toString().toLowerCase();
 		}
-
-		public static final String KEY = "type";
 	}
 
-	public static enum AxisShow implements PlotSetting {
+	public enum AxisShow implements PlotSetting {
 		AXIS, LINE, MARKER, TEXT, NOTHING("");
 
 		public static final String KEY_VALUE_AXIS = "axis.value.show";
@@ -126,7 +126,7 @@ public class PlotConstants {
 		}
 	}
 
-	public static enum AxisList implements PlotSetting {
+	public enum AxisList implements PlotSetting {
 		RELEVANT, NOTHING("");
 
 		public static final String KEY = "axis.value.list";
@@ -145,6 +145,10 @@ public class PlotConstants {
 		public String getValue() {
 			return value;
 		}
+	}
+
+	private PlotConstants() {
+
 	}
 
 	public static List<String> toStringList(PlotSetting[] input) {

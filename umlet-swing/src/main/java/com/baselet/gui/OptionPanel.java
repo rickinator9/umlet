@@ -6,7 +6,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Vector;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -51,7 +50,7 @@ public class OptionPanel extends JPanel implements ActionListener {
 	private final JComboBox propertiesPanelFontsize = new JComboBox(new Integer[] { 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20 });
 	private final JComboBox defaultFontFamily = new JComboBox(Constants.fontFamilyList.toArray(new String[Constants.fontFamilyList.size()]));
 
-	private final Vector<String> uisTechnicalNames = new Vector<String>();
+	private final ArrayList<String> uisTechnicalNames = new ArrayList<>();
 
 	private OptionPanel() {
 		setLayout(new GridLayout(0, 2, 4, 4));
@@ -94,28 +93,28 @@ public class OptionPanel extends JPanel implements ActionListener {
 		this.add(new JLabel("Optional font to embedd in PDF - bold+italic"));
 		this.add(pdfFontBoldItalic);
 
-		JButton button_ok = new JButton("Ok");
-		button_ok.setActionCommand("Ok");
-		button_ok.addActionListener(this);
-		JButton button_cancel = new JButton("Cancel");
-		button_cancel.setActionCommand("Cancel");
-		button_cancel.addActionListener(this);
+		JButton buttonOk = new JButton("Ok");
+		buttonOk.setActionCommand("Ok");
+		buttonOk.addActionListener(this);
+		JButton buttonCancel = new JButton("Cancel");
+		buttonCancel.setActionCommand("Cancel");
+		buttonCancel.addActionListener(this);
 
-		JPanel button_panel = new JPanel();
-		button_panel.setLayout(new BoxLayout(button_panel, BoxLayout.X_AXIS));
-		button_panel.add(Box.createHorizontalGlue());
-		button_panel.add(button_cancel);
-		button_panel.add(Box.createRigidArea(new Dimension(20, 0)));
-		button_panel.add(button_ok);
-		button_panel.add(Box.createHorizontalGlue());
-		button_panel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+		buttonPanel.add(Box.createHorizontalGlue());
+		buttonPanel.add(buttonCancel);
+		buttonPanel.add(Box.createRigidArea(new Dimension(20, 0)));
+		buttonPanel.add(buttonOk);
+		buttonPanel.add(Box.createHorizontalGlue());
+		buttonPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
 		JPanel parent = new JPanel();
 		parent.setLayout(new BoxLayout(parent, BoxLayout.Y_AXIS));
 		parent.add(Box.createRigidArea(new Dimension(10, 10)));
 		parent.add(this);
 		parent.add(Box.createRigidArea(new Dimension(0, 20)));
-		parent.add(button_panel);
+		parent.add(buttonPanel);
 		parent.add(Box.createRigidArea(new Dimension(0, 20)));
 
 		optionFrame = new JFrame(Program.getInstance().getProgramName() + " Options");

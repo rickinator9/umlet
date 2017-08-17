@@ -252,7 +252,7 @@ public abstract class NewGridElement implements GridElement {
 		StickingPolygon poly = this.generateStickingBorder();
 		drawer.setLineType(LineType.DASHED);
 		drawer.setForegroundColor(ColorOwn.STICKING_POLYGON);
-		ArrayList<? extends Line> lines = poly.getStickLines();
+		List<? extends Line> lines = poly.getStickLines();
 		drawer.drawLines(lines.toArray(new Line[lines.size()]));
 		drawer.setLineType(LineType.SOLID);
 		drawer.resetColorSettings();
