@@ -3,7 +3,6 @@ package com.baselet.element.elementnew.plot.drawer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 import com.baselet.control.SharedUtils;
@@ -25,8 +24,8 @@ public class PlotDrawHandler {
 	private String[] title;
 	private String[] desc;
 	private Double[][] values;
-	private SortedSet<Double> valuesSorted;
-	private SortedSet<Double> valuesShownOnAxisSorted;
+	private TreeSet<Double> valuesSorted;
+	private TreeSet<Double> valuesShownOnAxisSorted;
 	// private Double[][] valuesMinMaxCorrected; // if all values are >0 or all values are <0 the distance from 0 to the first real value will be subtracted
 
 	protected DrawHandler base;

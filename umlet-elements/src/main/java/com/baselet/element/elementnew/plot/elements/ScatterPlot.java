@@ -26,7 +26,7 @@ public class ScatterPlot extends AbstractPlot {
 
 	@Override
 	protected List<AxisShow> defaultDescAxisShow() {
-		return Arrays.asList(AxisShow.AXIS, AxisShow.MARKER, AxisShow.TEXT);
+		return Arrays.asList(AxisShow.Axis, AxisShow.Marker, AxisShow.Text);
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class ScatterPlot extends AbstractPlot {
 
 	@Override
 	protected List<AxisList> defaultValueAxisList() {
-		return Arrays.asList(AxisList.RELEVANT);
+		return Arrays.asList(AxisList.Relevant);
 	}
 
 	@Override

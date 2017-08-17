@@ -36,6 +36,9 @@ public class PlotConstants {
 	public static final String REGEX_DATA_SEPARATOR = "([\t ]+)";
 	public static final String REGEX_DATA_GUESS = "((?!(" + REGEX_COMMENT + "))(([^=]+)|(.*" + REGEX_DATA_SEPARATOR + ".*)))";
 
+	// The following line is needed to color everything which doesn't match another RegEx
+	// public static final String REGEX_COLOR_BASE = "(?!((" + REGEX_COMMENT + ")|(" + PLOT + ")|(" + REGEX_VALUE_ASSIGNMENT + "))).*";
+
 	/* The following variables are automatically parsed for the autocompletion. Therefore some conventions must be made: 1.) The possible values of a key must be listed in the following lines or they will not be recognized by the autocompletion 2.) Every key is separated in 3 parts: KEY_<type>_<name>. <type> can be STRING,INT,LIST,BOOL (in future there may be more types) 3.) If there is a limited number of possible values it must be named: <name>_<value> where <name> must match the <name> tag in the key 4.) values with _DEFAULT at the end are ignored by the autocompletion. */
 
 	/** Plotgrid Value Constants **/
@@ -62,46 +65,25 @@ public class PlotConstants {
 	public static final String KEY_LIST_COLORS = "colors"; // DEFAULT: cycling through colors-list
 	public static final List<String> COLORS_DEFAULT = Collections.unmodifiableList(Arrays.asList("red", "blue", "green", "orange", "cyan", "magenta", "pink"));
 
-	public static final List<AutocompletionText> AUTOCOMPLETION_LIST = Collections.unmodifiableList(Arrays.asList(
-			new AutocompletionText(PLOT, "draws the configured plot"),
-			new AutocompletionText(DATA, "marks everything until the next empty line as dataset"),
-			new AutocompletionText(DATA + KEY_VALUE_SEP + "<name>", "as data but with explicit name"),
-			new AutocompletionText(KEY_INT_GRID_WIDTH + KEY_VALUE_SEP + GRID_WIDTH_DEFAULT, "sets the amount of plots per line"),
-			new AutocompletionText(KEY_BOOL_DATA_INVERT + KEY_VALUE_SEP + DATA_INVERT_DEFAULT, "inverts the dataset"),
-			new AutocompletionText(KEY_BOOL_PLOT_TILT + KEY_VALUE_SEP + PLOT_TILT_DEFAULT, "tilts the plot"),
-			new AutocompletionText(KEY_INT_X_POSITION + KEY_VALUE_SEP + "<integer>", "places the next plot at specific horizontal grid position"),
-			new AutocompletionText(KEY_INT_Y_POSITION + KEY_VALUE_SEP + "<integer>", "places the next plot at specific vertical grid position"),
-			new AutocompletionText(KEY_INT_MIN_VALUE + KEY_VALUE_SEP + MIN_VALUE_ALL, "restrict the highest value shown in the plot"),
-			new AutocompletionText(KEY_INT_MAX_VALUE + KEY_VALUE_SEP + MAX_VALUE_ALL, "restrict the lowest value shown in the plot"),
-			new AutocompletionText(KEY_LIST_COLORS + KEY_VALUE_SEP + COLORS_DEFAULT.get(0) + VALUE_LIST_SEPARATOR + COLORS_DEFAULT.get(1), "sets a list of colors which will be cycled by the plot"),
-
-			new AutocompletionText(PlotType.KEY + KEY_VALUE_SEP + PlotType.BAR.getValue(), "sets the plot type to Bar plot"),
-			new AutocompletionText(PlotType.KEY + KEY_VALUE_SEP + PlotType.LINE.getValue(), "sets the plot type to Line plot"),
-			new AutocompletionText(PlotType.KEY + KEY_VALUE_SEP + PlotType.PIE.getValue(), "sets the plot type to Pie plot"),
-			new AutocompletionText(PlotType.KEY + KEY_VALUE_SEP + PlotType.SCATTER.getValue(), "sets the plot type to Scatter plot"),
-
-			new AutocompletionText(AxisShow.KEY_VALUE_AXIS + AxisShow.getValueList(), "a list of elements to show at the value axis"),
-			new AutocompletionText(AxisShow.KEY_DESC_AXIS + AxisShow.getValueList(), "a list of elements to show at the description axis"),
-
-			new AutocompletionText(AxisList.KEY + KEY_VALUE_SEP + AxisList.RELEVANT.getValue(), "restricts shown values to occurring ones")));
-
 	public static interface PlotSetting {
 		public String getValue();
 	}
 
-	public enum PlotType implements PlotSetting {
-		BAR, LINE, PIE, SCATTER;
+	public static enum PlotType implements PlotSetting {
+		Bar, Line, Pie, Scatter;
 
 		@Override
 		public String getValue() {
 			return toString().toLowerCase();
 		}
 
-		public static final String KEY = "type";
+		public static String getKey() {
+			return "type";
+		}
 	}
 
-	public enum AxisShow implements PlotSetting {
-		AXIS, LINE, MARKER, TEXT, NOTHING("");
+	public static enum AxisShow implements PlotSetting {
+		Axis, Line, Marker, Text, Nothing("");
 
 		private final String value;
 
@@ -109,12 +91,12 @@ public class PlotConstants {
 			value = toString().toLowerCase();
 		}
 
-		AxisShow(String value) {
-			this.value = value;
+		public static String getValueList() {
+			return KEY_VALUE_SEP + AxisShow.Axis.getValue() + VALUE_LIST_SEPARATOR + AxisShow.Line.getValue() + VALUE_LIST_SEPARATOR + AxisShow.Marker.getValue() + VALUE_LIST_SEPARATOR + AxisShow.Text.getValue();
 		}
 
-		public static String getValueList() {
-			return KEY_VALUE_SEP + AxisShow.AXIS.getValue() + VALUE_LIST_SEPARATOR + AxisShow.LINE.getValue() + VALUE_LIST_SEPARATOR + AxisShow.MARKER.getValue() + VALUE_LIST_SEPARATOR + AxisShow.TEXT.getValue();
+		AxisShow(String value) {
+			this.value = value;
 		}
 
 		@Override
@@ -122,13 +104,17 @@ public class PlotConstants {
 			return value;
 		}
 
-		public static final String KEY_VALUE_AXIS = "axis.value.show";
+		public static String getKeyValueAxis() {
+			return "axis.value.show";
+		}
 
-		public static final String KEY_DESC_AXIS = "axis.desc.show";
+		public static String getKeyDescAxis() {
+			return "axis.desc.show";
+		}
 	}
 
-	public enum AxisList implements PlotSetting {
-		RELEVANT, NOTHING("");
+	public static enum AxisList implements PlotSetting {
+		Relevant, Nothing("");
 
 		private final String value;
 
@@ -145,7 +131,9 @@ public class PlotConstants {
 			return value;
 		}
 
-		public static final String KEY = "axis.value.list";
+		public static String getKey() {
+			return "axis.value.list";
+		}
 	}
 
 	public static List<String> toStringList(PlotSetting[] input) {
@@ -153,11 +141,34 @@ public class PlotConstants {
 	}
 
 	public static List<String> toStringList(List<? extends PlotSetting> input) {
-		List<String> returnList = new ArrayList<>();
+		List<String> returnList = new ArrayList<String>();
 		for (PlotSetting o : input) {
 			returnList.add(o.getValue());
 		}
 		return returnList;
 	}
+
+	public static final List<AutocompletionText> AUTOCOMPLETION_LIST = Collections.unmodifiableList(Arrays.asList(
+			new AutocompletionText(PLOT, "draws the configured plot"),
+			new AutocompletionText(DATA, "marks everything until the next empty line as dataset"),
+			new AutocompletionText(DATA + KEY_VALUE_SEP + "<name>", "as data but with explicit name"),
+			new AutocompletionText(KEY_INT_GRID_WIDTH + KEY_VALUE_SEP + GRID_WIDTH_DEFAULT, "sets the amount of plots per line"),
+			new AutocompletionText(KEY_BOOL_DATA_INVERT + KEY_VALUE_SEP + DATA_INVERT_DEFAULT, "inverts the dataset"),
+			new AutocompletionText(KEY_BOOL_PLOT_TILT + KEY_VALUE_SEP + PLOT_TILT_DEFAULT, "tilts the plot"),
+			new AutocompletionText(KEY_INT_X_POSITION + KEY_VALUE_SEP + "<integer>", "places the next plot at specific horizontal grid position"),
+			new AutocompletionText(KEY_INT_Y_POSITION + KEY_VALUE_SEP + "<integer>", "places the next plot at specific vertical grid position"),
+			new AutocompletionText(KEY_INT_MIN_VALUE + KEY_VALUE_SEP + MIN_VALUE_ALL, "restrict the highest value shown in the plot"),
+			new AutocompletionText(KEY_INT_MAX_VALUE + KEY_VALUE_SEP + MAX_VALUE_ALL, "restrict the lowest value shown in the plot"),
+			new AutocompletionText(KEY_LIST_COLORS + KEY_VALUE_SEP + COLORS_DEFAULT.get(0) + VALUE_LIST_SEPARATOR + COLORS_DEFAULT.get(1), "sets a list of colors which will be cycled by the plot"),
+
+			new AutocompletionText(PlotType.getKey() + KEY_VALUE_SEP + PlotType.Bar.getValue(), "sets the plot type to Bar plot"),
+			new AutocompletionText(PlotType.getKey() + KEY_VALUE_SEP + PlotType.Line.getValue(), "sets the plot type to Line plot"),
+			new AutocompletionText(PlotType.getKey() + KEY_VALUE_SEP + PlotType.Pie.getValue(), "sets the plot type to Pie plot"),
+			new AutocompletionText(PlotType.getKey() + KEY_VALUE_SEP + PlotType.Scatter.getValue(), "sets the plot type to Scatter plot"),
+
+			new AutocompletionText(AxisShow.getKeyValueAxis() + AxisShow.getValueList(), "a list of elements to show at the value axis"),
+			new AutocompletionText(AxisShow.getKeyDescAxis() + AxisShow.getValueList(), "a list of elements to show at the description axis"),
+
+			new AutocompletionText(AxisList.getKey() + KEY_VALUE_SEP + AxisList.Relevant.getValue(), "restricts shown values to occurring ones")));
 
 }

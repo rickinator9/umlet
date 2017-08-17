@@ -135,10 +135,9 @@ public class FontHandler {
 	}
 
 	public void writeText(Graphics2D g2, String s, double x, double y, AlignHorizontal align, boolean applyZoom) {
-		double offsetY = y;
 		for (String line : s.split("\n", -1)) {
-			write(g2, StringStyle.analyzeFormatLabels(line), x, offsetY, align, applyZoom);
-			offsetY += g2.getFontMetrics().getHeight();
+			write(g2, StringStyle.analyzeFormatLabels(line), x, y, align, applyZoom);
+			y += g2.getFontMetrics().getHeight();
 		}
 	}
 
@@ -147,10 +146,9 @@ public class FontHandler {
 	}
 
 	public void writeText(Graphics2D g2, StringStyle[] lines, double x, double y, AlignHorizontal align, boolean applyZoom) {
-		double offsetY = y;
 		for (StringStyle line : lines) {
-			write(g2, line, x, offsetY, align, applyZoom);
-			offsetY += g2.getFontMetrics().getHeight();
+			write(g2, line, x, y, align, applyZoom);
+			y += g2.getFontMetrics().getHeight();
 		}
 	}
 
@@ -158,19 +156,18 @@ public class FontHandler {
 		if (singleLine == null || singleLine.getStringWithoutMarkup().isEmpty()) {
 			return;
 		}
-		double zoomedFontSize = getFontSize(applyZoom);
-		FormattedFont formattedFont = new FormattedFont(singleLine, zoomedFontSize, getFont(applyZoom), g2.getFontRenderContext());
-		fontrenderContext = g2.getFontRenderContext();
+		double fontSize = getFontSize(applyZoom);
+		FormattedFont formattedFont = new FormattedFont(singleLine, fontSize, getFont(applyZoom), g2.getFontRenderContext());
+		fontrenderContext = g2.getFontRenderContext(); // TODO workaround to make sure getTextSize works without a graphics object
 
-		double offsetX = 0;
 		if (align == AlignHorizontal.CENTER) {
-			offsetX = (int) (x - formattedFont.getWidth() / 2);
+			x = (int) (x - formattedFont.getWidth() / 2);
 		}
 		else if (align == AlignHorizontal.RIGHT) {
-			offsetX = (int) (x - formattedFont.getWidth());
+			x = (int) (x - formattedFont.getWidth());
 		}
 
-		g2.drawString(formattedFont.getAttributedCharacterIterator(), (float) offsetX, (float) y);
+		g2.drawString(formattedFont.getAttributedCharacterIterator(), (float) x, (float) y);
 	}
 
 	public static DimensionDouble getTextSizeStatic(FormattedFont formattedFont) {

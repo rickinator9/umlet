@@ -45,11 +45,11 @@ public class DrawPanel extends JLayeredPane implements Printable {
 	private static final Logger log = LoggerFactory.getLogger(DrawPanel.class);
 
 	private final Point origin;
-	private JScrollPane scr;
+	private JScrollPane _scr;
 	private final SelectorOld selector;
 	private final DiagramHandler handler;
 
-	private final List<GridElement> gridElements = new ArrayList<>();
+	private final List<GridElement> gridElements = new ArrayList<GridElement>();
 
 	public DrawPanel(DiagramHandler handler, boolean initStartupTextAndFiledrop) {
 		this.handler = handler;
@@ -124,12 +124,12 @@ public class DrawPanel extends JLayeredPane implements Printable {
 	}
 
 	private void setScrollPanel(JScrollPane scr) {
-		scr = scr;
+		_scr = scr;
 		scr.setViewportView(this);
 	}
 
 	public JScrollPane getScrollPane() {
-		return scr;
+		return _scr;
 	}
 
 	/**
@@ -142,7 +142,7 @@ public class DrawPanel extends JLayeredPane implements Printable {
 	 * @return Rectangle which contains all entities with border space
 	 */
 	public static Rectangle getContentBounds(int borderSpace, Collection<GridElement> entities) {
-		if (entities.isEmpty()) {
+		if (entities.size() == 0) {
 			return new Rectangle(0, 0, 0, 0);
 		}
 
@@ -205,7 +205,7 @@ public class DrawPanel extends JLayeredPane implements Printable {
 
 	@SuppressWarnings("unchecked")
 	private <T extends GridElement> List<T> getHelper(Class<T> filtered) {
-		List<T> gridElementsToReturn = new ArrayList<>();
+		List<T> gridElementsToReturn = new ArrayList<T>();
 		for (GridElement e : getGridElements()) {
 			if (e.getClass().equals(filtered)) {
 				gridElementsToReturn.add((T) e);
@@ -265,8 +265,8 @@ public class DrawPanel extends JLayeredPane implements Printable {
 			setVerticalScrollbarVisibility(true);
 		}
 
-		int width = (int) (scr.getHorizontalScrollBar().getValue() + getViewableDiagrampanelSize().getWidth() - adjustWidth);
-		int height = (int) (scr.getVerticalScrollBar().getValue() + getViewableDiagrampanelSize().getHeight() - adjustHeight);
+		int width = (int) (_scr.getHorizontalScrollBar().getValue() + getViewableDiagrampanelSize().getWidth() - adjustWidth);
+		int height = (int) (_scr.getVerticalScrollBar().getValue() + getViewableDiagrampanelSize().getHeight() - adjustHeight);
 		setPreferredSize(new Dimension(width, height));
 
 		changeViewPosition(-adjustWidth, -adjustHeight);
@@ -276,9 +276,9 @@ public class DrawPanel extends JLayeredPane implements Printable {
 	 * Changes the viewposition of the drawpanel and recalculates the optimal drawpanelsize
 	 */
 	public void changeViewPosition(int incx, int incy) {
-		Point viewp = scr.getViewport().getViewPosition();
-		scr.getViewport().setViewSize(getPreferredSize());
-		scr.getViewport().setViewPosition(new Point(viewp.x + incx, viewp.y + incy));
+		Point viewp = _scr.getViewport().getViewPosition();
+		_scr.getViewport().setViewSize(getPreferredSize());
+		_scr.getViewport().setViewPosition(new Point(viewp.x + incx, viewp.y + incy));
 	}
 
 	/**
@@ -289,14 +289,14 @@ public class DrawPanel extends JLayeredPane implements Printable {
 
 		Rectangle diaWithoutWhite = getContentBounds(0, getGridElements());
 		Dimension viewSize = getViewableDiagrampanelSize();
-		int horSbPos = scr.getHorizontalScrollBar().getValue();
-		int verSbPos = scr.getVerticalScrollBar().getValue();
+		int horSbPos = _scr.getHorizontalScrollBar().getValue();
+		int verSbPos = _scr.getVerticalScrollBar().getValue();
 
 		horSbPos = handler.realignToGrid(false, horSbPos);
 		verSbPos = handler.realignToGrid(false, verSbPos);
 
 		int newX = 0;
-		if (scr.getHorizontalScrollBar().isShowing()) {
+		if (_scr.getHorizontalScrollBar().isShowing()) {
 			if (horSbPos > diaWithoutWhite.getX()) {
 				newX = diaWithoutWhite.getX();
 			}
@@ -306,7 +306,7 @@ public class DrawPanel extends JLayeredPane implements Printable {
 		}
 
 		int newY = 0;
-		if (scr.getVerticalScrollBar().isShowing()) {
+		if (_scr.getVerticalScrollBar().isShowing()) {
 			if (verSbPos > diaWithoutWhite.getY()) {
 				newY = diaWithoutWhite.getY();
 			}
@@ -362,26 +362,41 @@ public class DrawPanel extends JLayeredPane implements Printable {
 		int verSbWidth = 0;
 		int horSbHeight = 0;
 		if (vertWasVisible) {
-			verSbWidth = scr.getVerticalScrollBar().getWidth();
+			verSbWidth = _scr.getVerticalScrollBar().getWidth();
 		}
 		if (horWasVisible) {
-			horSbHeight = scr.getHorizontalScrollBar().getHeight();
+			horSbHeight = _scr.getHorizontalScrollBar().getHeight();
 		}
 
-		boolean horizontalScrollbarVisibility = DetermineHorizontalScrollbarVisibility(diaWithoutWhite, viewSize, verSbWidth);
-		setHorizontalScrollbarVisibility(horizontalScrollbarVisibility);
+		// If the horizontal scrollbar is on the most left point && the the right end of the diagram without whitespace <= the viewable width incl. the width of the vertical scrollbar we hide the horizontal scrollbar
+		if (_scr.getHorizontalScrollBar().getValue() < handler.getGridSize() && diaWithoutWhite.getX() + diaWithoutWhite.getWidth() <= viewSize.getWidth() + verSbWidth) {
+			setHorizontalScrollbarVisibility(false);
+		}
+		else if (_scr.getHorizontalScrollBar().getValue() < handler.getGridSize() && getViewableDiagrampanelSize().width + _scr.getHorizontalScrollBar().getValue() == diaWithoutWhite.getX() + diaWithoutWhite.getWidth()) {
+			setHorizontalScrollbarVisibility(false);
+		}
+		else {
+			setHorizontalScrollbarVisibility(true);
+		}
 
-		boolean verticalScrollbarVisibility = DetermineVerticalScrollbarVisibility(diaWithoutWhite, viewSize, verSbWidth);
-		setVerticalScrollbarVisibility(verticalScrollbarVisibility);
+		if (_scr.getVerticalScrollBar().getValue() < handler.getGridSize() && diaWithoutWhite.getY() + diaWithoutWhite.getHeight() <= viewSize.getHeight() + horSbHeight) {
+			setVerticalScrollbarVisibility(false);
+		}
+		else if (_scr.getVerticalScrollBar().getValue() < handler.getGridSize() && getViewableDiagrampanelSize().height + _scr.getVerticalScrollBar().getValue() == diaWithoutWhite.getY() + diaWithoutWhite.getHeight()) {
+			setVerticalScrollbarVisibility(false);
+		}
+		else {
+			setVerticalScrollbarVisibility(true);
+		}
 
 		// REMOVED TO FIX JUMPING PALETTE ENTRIES AT COPYING/CUTTING
 		// adjust x and y to avoid jumping diagram if both scrollbars were visible and one of them disappears (only in the upper left corner)
 		int adx = 0;
 		int ady = 0;
-		if (scr.getHorizontalScrollBar().getValue() != 0 && vertWasVisible && !isVerticalScrollbarVisible()) {
+		if (_scr.getHorizontalScrollBar().getValue() != 0 && vertWasVisible && !isVerticalScrollbarVisible()) {
 			adx = handler.realignToGrid(false, horSbHeight);
 		}
-		if (scr.getVerticalScrollBar().getValue() != 0 && horWasVisible && !isHorizontalScrollbarVisible()) {
+		if (_scr.getVerticalScrollBar().getValue() != 0 && horWasVisible && !isHorizontalScrollbarVisible()) {
 			ady = handler.realignToGrid(false, verSbWidth);
 		}
 
@@ -391,55 +406,30 @@ public class DrawPanel extends JLayeredPane implements Printable {
 		}
 	}
 
-	private boolean DetermineHorizontalScrollbarVisibility(Rectangle diaWithoutWhite, Dimension viewSize, int verSbWidth) {
-		// If the horizontal scrollbar is on the most left point && the the right end of the diagram without whitespace <= the viewable width incl. the width of the vertical scrollbar we hide the horizontal scrollbar
-		if (scr.getHorizontalScrollBar().getValue() < handler.getGridSize() && diaWithoutWhite.getX() + diaWithoutWhite.getWidth() <= viewSize.getWidth() + verSbWidth) {
-			return false;
-		}
-		else if (scr.getHorizontalScrollBar().getValue() < handler.getGridSize() && getViewableDiagrampanelSize().width + scr.getHorizontalScrollBar().getValue() == diaWithoutWhite.getX() + diaWithoutWhite.getWidth()) {
-			return false;
-		}
-		else {
-			return true;
-		}
-	}
-
-	private boolean DetermineVerticalScrollbarVisibility(Rectangle diaWithoutWhite, Dimension viewSize, int horSbHeight) {
-		if (scr.getVerticalScrollBar().getValue() < handler.getGridSize() && diaWithoutWhite.getY() + diaWithoutWhite.getHeight() <= viewSize.getHeight() + horSbHeight) {
-			return false;
-		}
-		else if (scr.getVerticalScrollBar().getValue() < handler.getGridSize() && getViewableDiagrampanelSize().height + scr.getVerticalScrollBar().getValue() == diaWithoutWhite.getY() + diaWithoutWhite.getHeight()) {
-			return false;
-		}
-		else {
-			return true;
-		}
-	}
-
 	private void setHorizontalScrollbarVisibility(boolean visible) {
 		if (visible) {
-			scr.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+			_scr.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 		}
 		else {
-			scr.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+			_scr.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		}
 	}
 
 	private void setVerticalScrollbarVisibility(boolean visible) {
 		if (visible) {
-			scr.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+			_scr.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		}
 		else {
-			scr.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+			_scr.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 		}
 	}
 
 	private boolean isHorizontalScrollbarVisible() {
-		return scr.getHorizontalScrollBarPolicy() == ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS;
+		return _scr.getHorizontalScrollBarPolicy() == ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS;
 	}
 
 	private boolean isVerticalScrollbarVisible() {
-		return scr.getVerticalScrollBarPolicy() == ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
+		return _scr.getVerticalScrollBarPolicy() == ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
 	}
 
 	private void drawGrid(Graphics2D g2d) {
@@ -459,6 +449,25 @@ public class DrawPanel extends JLayeredPane implements Printable {
 			g2d.drawLine(0, i, width, i);
 		}
 	}
+
+	// private void drawDevHelpLines(Graphics2D g2d) {
+	// g2d.setStroke(Utils.getStroke(LineType.DASHED, 1));
+	//
+	// g2d.setColor(Color.BLUE);
+	// int w = handler.getDrawPanel().getScrollPane().getViewport().getViewPosition().x;
+	// int h = handler.getDrawPanel().getScrollPane().getViewport().getViewPosition().y;
+	// g2d.drawRect(w, h, w + 2, h + 2);
+	//
+	// g2d.setColor(Color.GRAY);
+	// Dimension dim = getViewableDiagrampanelSize();
+	// g2d.drawRect(0, 0, (int) dim.getWidth(), (int) dim.getHeight());
+	//
+	// g2d.setColor(Color.RED);
+	// Dimension dim2 = getPreferredSize();
+	// g2d.drawRect(0, 0, (int) dim2.getWidth(), (int) dim2.getHeight());
+	//
+	// g2d.setStroke(Utils.getStroke(LineType.SOLID, 1));
+	// }
 
 	@Override
 	protected void paintChildren(Graphics g) {
@@ -557,7 +566,7 @@ public class DrawPanel extends JLayeredPane implements Printable {
 	}
 
 	public void scroll(int amount) {
-		JScrollBar scrollBar = scr.getVerticalScrollBar();
+		JScrollBar scrollBar = _scr.getVerticalScrollBar();
 		int increment = scrollBar.getUnitIncrement();
 		scrollBar.setValue(scrollBar.getValue() + amount * increment);
 	}

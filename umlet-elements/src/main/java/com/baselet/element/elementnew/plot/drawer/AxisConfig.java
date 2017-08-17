@@ -1,7 +1,6 @@
 package com.baselet.element.elementnew.plot.drawer;
 
 import java.util.List;
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 import com.baselet.element.elementnew.plot.parser.PlotConstants.AxisList;
@@ -9,15 +8,10 @@ import com.baselet.element.elementnew.plot.parser.PlotConstants.AxisShow;
 
 public class AxisConfig {
 
-	private boolean descAxisLine;
-	private boolean descAxisMarkers;
-	private boolean descAxisText;
-	private boolean descAxisGray;
-
-	private boolean valueAxisLine;
-	private boolean valueAxisMarkers;
-	private boolean valueAxisText;
-	private boolean valueAxisGray;
+	private boolean descAxisLine, valueAxisLine;
+	private boolean descAxisMarkers, valueAxisMarkers;
+	private boolean descAxisText, valueAxisText;
+	private boolean descAxisGray, valueAxisGray;
 
 	private TreeSet<Double> valueAxisList;
 	private boolean showRelevantValues;
@@ -43,30 +37,30 @@ public class AxisConfig {
 
 	public final void enableDescAxis(List<String> showList/* , List<String> valueList */) {
 		drawAxis = true;
-		descAxisLine = showList.contains(AxisShow.AXIS.getValue());
-		descAxisGray = showList.contains(AxisShow.LINE.getValue());
-		descAxisMarkers = showList.contains(AxisShow.MARKER.getValue());
-		descAxisText = showList.contains(AxisShow.TEXT.getValue());
+		descAxisLine = showList.contains(AxisShow.Axis.getValue());
+		descAxisGray = showList.contains(AxisShow.Line.getValue());
+		descAxisMarkers = showList.contains(AxisShow.Marker.getValue());
+		descAxisText = showList.contains(AxisShow.Text.getValue());
 	}
 
 	public final void enableValueAxis(List<String> showList, List<String> valueList) {
 		drawAxis = true;
-		valueAxisLine = showList.contains(AxisShow.AXIS.getValue());
-		valueAxisGray = showList.contains(AxisShow.LINE.getValue());
-		valueAxisMarkers = showList.contains(AxisShow.MARKER.getValue());
-		valueAxisText = showList.contains(AxisShow.TEXT.getValue());
+		valueAxisLine = showList.contains(AxisShow.Axis.getValue());
+		valueAxisGray = showList.contains(AxisShow.Line.getValue());
+		valueAxisMarkers = showList.contains(AxisShow.Marker.getValue());
+		valueAxisText = showList.contains(AxisShow.Text.getValue());
 
 		// other than the special value "relevant", only double values are allowed
-		showRelevantValues = valueList.contains(AxisList.RELEVANT.getValue());
-		valueAxisList = new TreeSet<>();
+		showRelevantValues = valueList.contains(AxisList.Relevant.getValue());
+		valueAxisList = new TreeSet<Double>();
 		for (String v : valueList) {
-			if ("".equals(v) || AxisList.RELEVANT.getValue().equals(v)) {
+			if ("".equals(v) || AxisList.Relevant.getValue().equals(v)) {
 				continue;
 			}
 			try {
 				valueAxisList.add(Double.parseDouble(v));
 			} catch (Exception e) {
-				throw new IllegalArgumentException("Value must be a double: " + v, e);
+				throw new RuntimeException("Value must be a double: " + v, e);
 			}
 		}
 	}
@@ -171,7 +165,7 @@ public class AxisConfig {
 		this.valueSegment = valueSegment;
 	}
 
-	public SortedSet<Double> setValueAxisList(SortedSet<Double> valuesSorted) {
+	public TreeSet<Double> setValueAxisList(TreeSet<Double> valuesSorted) {
 		if (showRelevantValues) {
 			valueAxisList.addAll(valuesSorted);
 		}
