@@ -208,16 +208,16 @@ public class PlotGrid extends NewGridElement {
 	}
 
 	private AbstractPlot createPlot(DrawHandler drawer, PlotState plotState, int xPos, int yPos, String info) {
-		String type = plotState.getValueValidated(PlotType.getKey(), PlotType.Bar.getValue(), PlotConstants.toStringList(PlotType.values()));
+		String type = plotState.getValueValidated(PlotType.KEY, PlotType.BAR.getValue(), PlotConstants.toStringList(PlotType.values()));
 		log.debug("PlotGrid insert : " + type + " (" + xPos + ";" + yPos + ") " + info);
 		PlotGridDrawConfig plotDrawConfig = new PlotGridDrawConfig(getRealSize(), new Dimension(getRectangle().width, getRectangle().height), minValue, maxValue);
-		if (PlotType.Pie.getValue().equals(type)) {
+		if (PlotType.PIE.getValue().equals(type)) {
 			return new PiePlot(drawer, plotDrawConfig, plotState, xPos, yPos);
 		}
-		else if (PlotType.Line.getValue().equals(type)) {
+		else if (PlotType.LINE.getValue().equals(type)) {
 			return new LinePlot(drawer, plotDrawConfig, plotState, xPos, yPos);
 		}
-		else if (PlotType.Scatter.getValue().equals(type)) {
+		else if (PlotType.SCATTER.getValue().equals(type)) {
 			return new ScatterPlot(drawer, plotDrawConfig, plotState, xPos, yPos);
 		}
 		else {

@@ -75,35 +75,36 @@ public class PlotConstants {
 			new AutocompletionText(KEY_INT_MAX_VALUE + KEY_VALUE_SEP + MAX_VALUE_ALL, "restrict the lowest value shown in the plot"),
 			new AutocompletionText(KEY_LIST_COLORS + KEY_VALUE_SEP + COLORS_DEFAULT.get(0) + VALUE_LIST_SEPARATOR + COLORS_DEFAULT.get(1), "sets a list of colors which will be cycled by the plot"),
 
-			new AutocompletionText(PlotType.getKey() + KEY_VALUE_SEP + PlotType.Bar.getValue(), "sets the plot type to Bar plot"),
-			new AutocompletionText(PlotType.getKey() + KEY_VALUE_SEP + PlotType.Line.getValue(), "sets the plot type to Line plot"),
-			new AutocompletionText(PlotType.getKey() + KEY_VALUE_SEP + PlotType.Pie.getValue(), "sets the plot type to Pie plot"),
-			new AutocompletionText(PlotType.getKey() + KEY_VALUE_SEP + PlotType.Scatter.getValue(), "sets the plot type to Scatter plot"),
+			new AutocompletionText(PlotType.KEY + KEY_VALUE_SEP + PlotType.BAR.getValue(), "sets the plot type to Bar plot"),
+			new AutocompletionText(PlotType.KEY + KEY_VALUE_SEP + PlotType.LINE.getValue(), "sets the plot type to Line plot"),
+			new AutocompletionText(PlotType.KEY + KEY_VALUE_SEP + PlotType.PIE.getValue(), "sets the plot type to Pie plot"),
+			new AutocompletionText(PlotType.KEY + KEY_VALUE_SEP + PlotType.SCATTER.getValue(), "sets the plot type to Scatter plot"),
 
-			new AutocompletionText(AxisShow.getKeyValueAxis() + AxisShow.getValueList(), "a list of elements to show at the value axis"),
-			new AutocompletionText(AxisShow.getKeyDescAxis() + AxisShow.getValueList(), "a list of elements to show at the description axis"),
+			new AutocompletionText(AxisShow.KEY_VALUE_AXIS + AxisShow.getValueList(), "a list of elements to show at the value axis"),
+			new AutocompletionText(AxisShow.KEY_DESC_AXIS + AxisShow.getValueList(), "a list of elements to show at the description axis"),
 
-			new AutocompletionText(AxisList.getKey() + KEY_VALUE_SEP + AxisList.Relevant.getValue(), "restricts shown values to occurring ones")));
+			new AutocompletionText(AxisList.KEY + KEY_VALUE_SEP + AxisList.RELEVANT.getValue(), "restricts shown values to occurring ones")));
 
 	public static interface PlotSetting {
 		public String getValue();
 	}
 
 	public static enum PlotType implements PlotSetting {
-		Bar, Line, Pie, Scatter;
+		BAR, LINE, PIE, SCATTER;
 
 		@Override
 		public String getValue() {
 			return toString().toLowerCase();
 		}
 
-		public static String getKey() {
-			return "type";
-		}
+		public static final String KEY = "type";
 	}
 
 	public static enum AxisShow implements PlotSetting {
-		Axis, Line, Marker, Text, Nothing("");
+		AXIS, LINE, MARKER, TEXT, NOTHING("");
+
+		public static final String KEY_VALUE_AXIS = "axis.value.show";
+		public static final String KEY_DESC_AXIS = "axis.desc.show";
 
 		private final String value;
 
@@ -111,30 +112,24 @@ public class PlotConstants {
 			value = toString().toLowerCase();
 		}
 
-		public static String getValueList() {
-			return KEY_VALUE_SEP + AxisShow.Axis.getValue() + VALUE_LIST_SEPARATOR + AxisShow.Line.getValue() + VALUE_LIST_SEPARATOR + AxisShow.Marker.getValue() + VALUE_LIST_SEPARATOR + AxisShow.Text.getValue();
-		}
-
 		AxisShow(String value) {
 			this.value = value;
+		}
+
+		public static String getValueList() {
+			return KEY_VALUE_SEP + AxisShow.AXIS.getValue() + VALUE_LIST_SEPARATOR + AxisShow.LINE.getValue() + VALUE_LIST_SEPARATOR + AxisShow.MARKER.getValue() + VALUE_LIST_SEPARATOR + AxisShow.TEXT.getValue();
 		}
 
 		@Override
 		public String getValue() {
 			return value;
 		}
-
-		public static String getKeyValueAxis() {
-			return "axis.value.show";
-		}
-
-		public static String getKeyDescAxis() {
-			return "axis.desc.show";
-		}
 	}
 
 	public static enum AxisList implements PlotSetting {
-		Relevant, Nothing("");
+		RELEVANT, NOTHING("");
+
+		public static final String KEY = "axis.value.list";
 
 		private final String value;
 
@@ -150,10 +145,6 @@ public class PlotConstants {
 		public String getValue() {
 			return value;
 		}
-
-		public static String getKey() {
-			return "axis.value.list";
-		}
 	}
 
 	public static List<String> toStringList(PlotSetting[] input) {
@@ -161,7 +152,7 @@ public class PlotConstants {
 	}
 
 	public static List<String> toStringList(List<? extends PlotSetting> input) {
-		List<String> returnList = new ArrayList<String>();
+		List<String> returnList = new ArrayList<>();
 		for (PlotSetting o : input) {
 			returnList.add(o.getValue());
 		}

@@ -43,24 +43,24 @@ public class AxisConfig {
 
 	public final void enableDescAxis(List<String> showList/* , List<String> valueList */) {
 		drawAxis = true;
-		descAxisLine = showList.contains(AxisShow.Axis.getValue());
-		descAxisGray = showList.contains(AxisShow.Line.getValue());
-		descAxisMarkers = showList.contains(AxisShow.Marker.getValue());
-		descAxisText = showList.contains(AxisShow.Text.getValue());
+		descAxisLine = showList.contains(AxisShow.AXIS.getValue());
+		descAxisGray = showList.contains(AxisShow.LINE.getValue());
+		descAxisMarkers = showList.contains(AxisShow.MARKER.getValue());
+		descAxisText = showList.contains(AxisShow.TEXT.getValue());
 	}
 
 	public final void enableValueAxis(List<String> showList, List<String> valueList) {
 		drawAxis = true;
-		valueAxisLine = showList.contains(AxisShow.Axis.getValue());
-		valueAxisGray = showList.contains(AxisShow.Line.getValue());
-		valueAxisMarkers = showList.contains(AxisShow.Marker.getValue());
-		valueAxisText = showList.contains(AxisShow.Text.getValue());
+		valueAxisLine = showList.contains(AxisShow.AXIS.getValue());
+		valueAxisGray = showList.contains(AxisShow.LINE.getValue());
+		valueAxisMarkers = showList.contains(AxisShow.MARKER.getValue());
+		valueAxisText = showList.contains(AxisShow.TEXT.getValue());
 
 		// other than the special value "relevant", only double values are allowed
-		showRelevantValues = valueList.contains(AxisList.Relevant.getValue());
+		showRelevantValues = valueList.contains(AxisList.RELEVANT.getValue());
 		valueAxisList = new TreeSet<Double>();
 		for (String v : valueList) {
-			if ("".equals(v) || AxisList.Relevant.getValue().equals(v)) {
+			if ("".equals(v) || AxisList.RELEVANT.getValue().equals(v)) {
 				continue;
 			}
 			try {
